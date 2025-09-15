@@ -125,9 +125,9 @@ createApp(data).mount('#app');
 window.addEventListener('scroll', () => {
   const header = document.getElementById('header');
   if (0 < window.scrollY) {
-    header.classList.add('header--active');
+    header.classList.add('is-active');
   } else {
-    header.classList.remove('header--active');
+    header.classList.remove('is-active');
   }
 });
 
@@ -151,6 +151,10 @@ new Embed();
 import Fader from './js/fader.js';
 new Fader();
 
+// Modal
+import Modal from './js/modal.js';
+new Modal();
+
 // Preloader
 import Preloader from './js/preloader.js';
 new Preloader();
@@ -158,6 +162,10 @@ new Preloader();
 // Responsive Color
 import ResponsiveColor from './js/responsiveColor.js';
 new ResponsiveColor();
+
+// Reveal On Scroll
+import RevealOnScroll from './js/revealOnScroll.js';
+new RevealOnScroll();
 
 // Slider
 import Slider from './js/slider.js';
