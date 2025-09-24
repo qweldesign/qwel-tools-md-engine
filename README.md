@@ -1,6 +1,20 @@
-## QWEL STARTER TEMPLATE
+## Markdown Engine (Simple CMS)
 
-[QWEL.DESIGN](https://qwel.design) のweb開発のためのスターターキット
+Markdown ファイルを記事として読み込み、HTML に変換して表示するためのシンプルな PHP エンジン。  
+データベース不要で、作品集やブログなどの**軽量なサイト向けの CMS として利用可能**。
+
+[QWEL.DESIGN](https://tools.qwel.design/simple-cms/)
+
+---
+
+## 特徴
+
+- Markdown を HTML に変換して表示
+- パンくずリストやページネーションを自動生成
+- データベース不要、ファイルベースで管理
+- PHP のみで動作、軽量・シンプル
+
+---
 
 ## ライセンス | License
 

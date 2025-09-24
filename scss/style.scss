@@ -28,28 +28,19 @@
 
 // Layout
 @import "header";
-@import "gNav";
+@import "main";
 @import "footer";
 
 // Components
 @import "icon";
 @import "backToTop";
-@import "button";
-@import "cover";
-@import "drawerMenu";
-@import "embed";
-@import "modal";
-@import "preloader";
-@import "responsiveColor";
-@import "revealOnScroll";
-@import "slider";
+@import "breadcrumb";
+@import "pagination";
 
 // Projects
-@import "hero";
-@import "section";
 @import "postItem";
 @import "postList";
-@import "form";
+@import "postIndex";
 
 // Utility
 //@import "utilities/flex";
