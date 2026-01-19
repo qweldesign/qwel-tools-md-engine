@@ -1,4 +1,11 @@
 <?php
+/**
+ * ContentEngine.php
+ * © 2026 QWEL.DESIGN (https://qwel.design)
+ * Released under the MIT License.
+ * See LICENSE file for details.
+ */
+
 require_once __DIR__ . '/ContentLoader.php';
 require_once __DIR__ . '/ContentNavigation.php';
 require_once __DIR__ . '/Parsedown.php';
