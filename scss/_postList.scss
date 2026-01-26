@@ -33,7 +33,7 @@
     }
   }
 
-  &--grid {
+  &.is-grid {
     @include row();
 
     .postList__item {
@@ -48,7 +48,7 @@
     }
   }
 
-  &--list {
+  &.is-list {
     .postList__item {
       margin-block-end: space("medium");
       padding-block-end: space("medium");

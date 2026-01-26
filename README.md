@@ -3,7 +3,7 @@
 Markdown ファイルを記事として読み込み、HTML に変換して表示するためのシンプルな PHP エンジン。  
 データベース不要で、作品集やブログなどの**軽量なサイト向けの CMS として利用可能**。
 
-▶ Sample DEMO: [https://tools.qwel.design/simple-cms/]
+▶ Sample DEMO: [https://qwel.design/tools/simple-cms/]
 
 ---
 

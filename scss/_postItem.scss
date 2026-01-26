@@ -24,7 +24,7 @@
     font-size: $h3-font-size;
   }
 
-  &--single {
+  &.is-single {
     @include row();
 
     .postItem {

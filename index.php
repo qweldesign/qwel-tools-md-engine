@@ -31,13 +31,13 @@ $cms = new ContentEngine();
       <?php if (!$cms->is_single()) { ?>
         <h2 class="main__title">Simple CMS | Created by <span> ― QWEL.DESIGN</span></h2>
         <ul class="main__list">
-          <li class="main__listItem--spec">Markdown を HTML に変換して表示</li>
-          <li class="main__listItem--spec">パンくずリストやページネーションを自動生成</li>
-          <li class="main__listItem--spec">データベース不要、ファイルベースで管理</li>
-          <li class="main__listItem--spec">PHP のみで動作、軽量・シンプル</li>
+          <li class="main__listItem is-spec">Markdown を HTML に変換して表示</li>
+          <li class="main__listItem is-spec">パンくずリストやページネーションを自動生成</li>
+          <li class="main__listItem is-spec">データベース不要、ファイルベースで管理</li>
+          <li class="main__listItem is-spec">PHP のみで動作、軽量・シンプル</li>
         </ul>
         <h3 class="text-center my-large">SAMPLE BLOG</h3>
-        <ul class="postList postList--list">
+        <ul class="postList is-list">
           <?php foreach ($cms->get_posts() as $post) { ?>
             <li class="postList__item postItem">
               <figure class="postItem__image">
@@ -89,14 +89,14 @@ $cms = new ContentEngine();
     </main>
     <footer id="footer" class="footer">
       <div class="footer__inner">
-        <a class="footer__item footer__item--github" href="https://github.com/qweldesign" target="_blank" rel="noopener">
-          <svg class="icon icon--si icon--github icon--md" width="36" height="36" aria-hidden="true">
+        <a class="footer__item is-github" href="https://github.com/qweldesign" target="_blank" rel="noopener">
+          <svg class="icon is-si-github is-md" width="36" height="36" aria-hidden="true">
             <use href="./icons.svg#si-github"></use>
           </svg>
           <span>GitHub</span>
         </a>
-        <a class="footer__item footer__item--contact" href="https://tools.qwel.design/contact-form/" target="_blank" rel="noopener">
-          <svg class="icon icon--si icon--mail icon--md" width="36" height="36" aria-hidden="true">
+        <a class="footer__item is-contact" href="https://qwel.design/tools/contact-form/" target="_blank" rel="noopener">
+          <svg class="icon is-si-mail is-md" width="36" height="36" aria-hidden="true">
             <use href="./icons.svg#si-mail"></use>
           </svg>
           <span>Contact Me</span>
