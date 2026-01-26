@@ -65,7 +65,7 @@ class ContentEngine {
   public function get_breadcrumb(): string {
     $nav = new ContentNavigation([
       'topLabel'    => 'QWEL in Action: Creative Tools',
-      'topPath'     => '/',
+      'topPath'     => '/tools/',
       'subdirLabel' => 'Simple CMS',
       'subdirPath'  => './'
     ]);

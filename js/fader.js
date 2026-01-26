@@ -5,34 +5,35 @@
  * See LICENSE file for details.
  */
 
+/**
+ * フェードアニメーションで遷移するギャラリー
+ * 
+ * 使い方:
+ * _fader.scss をバンドルした css を読み込み,
+ * ギャラリー本体に [data-gallery="fader"] 属性を付与し,
+ * ギャラリーアイテムに [data-gallery-item] 属性を付与する
+ * 
+ * オプション:
+ * data-interval: アニメーション時間間隔 (data属性で指定)
+ */
 export default class Fader {
-  // data属性によるパラメータ管理:
-  // data-interval: スライドアニメーション時間間隔
   constructor(elem) {
-    // Faderの各要素
-    this.elem = elem || document.querySelector('.fader');
+    // 要素
+    this.elem = elem || document.querySelector('[data-gallery="fader"]');
     if (!this.elem) return;
-    this.inner = this.elem.querySelector('.cover__inner');
-    if (!this.inner) return;
-    this.items = this.inner.children;
-    if (!this.items.length || this.items.length <= 1) return;
+    this.items = Array.from(this.elem.querySelectorAll('[data-gallery-item]'));
+    if (!this.items.length) return;
 
-    // 表示間隔
-    this.interval = this.elem.dataset.interval || 5000;
+    // オプションをdata属性から取得
+    this.interval = Number(this.elem.dataset.interval) || 5000;
 
-    // 各状態管理
-    this.currentIndex = 0; // 2枚目から操作
+    // 状態管理
+    this.currentIndex = 0;
     this.itemsCount = this.items.length;
+    this.items[0].classList.add('is-current');
 
-    // ナビゲーションのセットアップ (暫定機能)
-    this.hasNav = false;
-    //this.setupNavs();
-
-    // 2番目以降の要素を背面に移動し、フェードさせておく
-    for (let i = 1; i < this.itemsCount; i++) {
-      this.items[i].style.zIndex--;
-      this.items[i].classList.add('is-fade');
-    }
+    // ナビゲーション
+    this.setupNav();
 
     // 開始
     this.startInterval();
@@ -50,41 +51,58 @@ export default class Fader {
     this.isPlay = false;
   }
 
-  setupNavs() {
-    this.hasNav = true;
-
-    // .cover__nav
+  setupNav() {
+    // .faderNav
     this.nav = document.createElement('ul');
-    this.nav.classList.add('cover__nav');
+    this.nav.classList.add('faderNav');
 
-    // .cover__navItem
+    // .faderNav__item
     for (let i = 0; i < this.itemsCount; i++) {
       const li = document.createElement('li');
-      li.classList.add('cover__navItem');
+      li.classList.add('faderNav__item');
       li.dataset.targetIndex = i; // data-target-indexを挿入
       this.nav.appendChild(li);
     }
 
     // 現アイテムに.is-currrentを付与
     this.navItems = this.nav.children;
-    this.navItems = this.nav.children;
     this.navItems[this.currentIndex].classList.add('is-current');
 
+    // 挿入
     this.elem.appendChild(this.nav);
 
+    // イベント登録
     this.handleEvents();
   }
 
   handleEvents() {
-    // ナビゲーション操作
-    const myTouch = 'ontouchend' in document && window.innerWidth < 1024 ? 'touchend' : 'click';
-    this.nav.addEventListener(myTouch, (event) => {
+    this.nav.addEventListener('click', (event) => {
       const target = event.target;
       if (target.dataset.targetIndex) {
-        this.fade(target.dataset.targetIndex - 0); // 数値型へパース
+        this.update(target.dataset.targetIndex - 0); // 数値型へパース
         this.stopInterval();
       }
     });
+  }
+  
+  update(index) {
+    this.currentIndex = index % this.itemsCount;
+    this.fade(this.currentIndex);
+    this.updateNav(this.currentIndex);
+  }
+
+  fade(index) {
+    this.items.forEach((item, i) => {
+      item.classList.toggle('is-current', i === index);
+    });
+  }
+
+  updateNav(index) {
+    if (this.nav.querySelector('.is-current')) {
+      this.nav.querySelector('.is-current').classList.remove('is-current');
+    }
+    this.navItems = this.nav.children;
+    this.navItems[index].classList.add('is-current');
   }
 
   loop(timeCurrent) {
@@ -101,56 +119,7 @@ export default class Fader {
   done() {
     if (this.isPlay) {
       this.startInterval();
-      this.fade((this.currentIndex + 1) % this.itemsCount);
+      this.update((this.currentIndex + 1) % this.itemsCount);
     }
-  }
-
-  fade(index) {
-    // prev(前面)とcurrent(背面)の要素をそれぞれ取得
-    const prev = this.items[this.currentIndex];
-    const current = this.items[index] || this.items[0];
-
-    // 移動
-    if (index > this.currentIndex) {
-      // 正順の場合、前からindexまでの要素を前面へ移動
-      for (let i = index; i > this.currentIndex; i--) this.items[i].style.zIndex++;
-    } else {
-      // 逆順の場合、後ろからindexまでの要素を背面へ移動
-      for (let i = this.currentIndex; i > index; i--) this.items[i].style.zIndex--;
-    }
-
-    // アニメーション
-    this.transitionEnd(current, () => {
-      // フェードイン
-      current.classList.remove('is-fade');
-    }).then(() => {
-      // トランジションが終了したら、前の要素をフェードさせておく
-      prev.classList.add('is-fade');
-    });
-
-    // インデックスを継承
-    this.currentIndex = index;
-
-    // ナビゲーション
-    if (this.hasNav) {
-      if (this.nav.querySelector('.is-current')) {
-        this.nav.querySelector('.is-current').classList.remove('is-current');
-      }
-      this.navItems = this.nav.children;
-      this.navItems[this.currentIndex].classList.add('is-current');
-    }
-  }
-
-  transitionEnd(elem, func) {
-    let callback;
-    const promise = new Promise((resolve, reject) => {
-      callback = () => resolve(elem);
-      elem.addEventListener('transitionend', callback);
-    });
-    func();
-    promise.then((elem) => {
-      elem.removeEventListener('transitionend', callback);
-    });
-    return promise;
   }
 }

@@ -33,7 +33,7 @@
     }
   }
 
-  &--grid {
+  &.is-grid {
     @include row();
 
     .postList__item {
@@ -48,7 +48,7 @@
     }
   }
 
-  &--list {
+  &.is-list {
     .postList__item {
       margin-block-end: space("medium");
       padding-block-end: space("medium");
@@ -63,16 +63,15 @@
       @include row(center);
 
       &__image {
-        @include col(3, ture);
+        @include col(3, true);
         margin: 0;
       }
 
       &__content {
-        @include col(6, ture);
+        @include col(6, true);
       }
 
       &__more {
-        display: block;
         text-align: right;
       }
     }
