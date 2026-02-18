@@ -244,10 +244,6 @@ button, input, select, textarea {
   justify-content: flex-start;
   align-items: flex-start;
 }
-.main__article {
-  width: 100%;
-  padding-inline: var(--container-pad--sm);
-}
 @media (min-width: 900px) {
   .main__article {
     flex-grow: 0;
@@ -255,7 +251,7 @@ button, input, select, textarea {
     flex-basis: 36rem;
   }
 }
-.main__aside {
+.main__article {
   width: 100%;
   padding-inline: var(--container-pad--sm);
 }
@@ -266,6 +262,10 @@ button, input, select, textarea {
     flex-basis: 18rem;
   }
 }
+.main__aside {
+  width: 100%;
+  padding-inline: var(--container-pad--sm);
+}
 
 /**
  * Layout - Footer
@@ -274,7 +274,6 @@ button, input, select, textarea {
   padding: var(--spacing--x-large) 0;
   background-color: var(--color--primary);
   color: var(--color--lightest);
-  text-align: center;
 }
 .footer a, .footer a:active {
   color: var(--color--lightest);
@@ -283,6 +282,9 @@ button, input, select, textarea {
 .footer a:hover, .footer a:focus {
   color: var(--color--lightest);
   text-decoration: underline;
+}
+.footer {
+  text-align: center;
 }
 .footer__inner {
   display: flex;
@@ -391,47 +393,6 @@ button, input, select, textarea {
 }
 
 /**
- * Component - Back To Top
- */
-.backToTop {
-  position: fixed;
-  right: var(--spacing--small);
-  bottom: var(--spacing--small);
-  z-index: 1000;
-  display: block;
-  width: 3rem;
-  height: 3rem;
-  padding: 0;
-  opacity: 0;
-  transform: translateY(1rem) rotateY(-180deg);
-  transition: all 0.5s ease;
-  text-align: center;
-  outline: 0;
-  cursor: default;
-  pointer-events: none;
-}
-.backToTop.is-active {
-  opacity: 1;
-  transform: translateY(0) rotateY(0);
-  cursor: pointer;
-  pointer-events: auto;
-}
-.backToTop > .icon {
-  border-radius: 50%;
-  background-color: var(--color--primary);
-  transition: background-color 0.25s ease;
-}
-.backToTop > .icon > .icon__span, .backToTop > .icon > .icon__span::before, .backToTop > .icon > .icon__span::after {
-  border-color: var(--color--lightest);
-}
-.backToTop:hover > .icon {
-  background-color: var(--color--primary--active);
-}
-.backToTop:hover > .icon > .icon__span, .backToTop:hover > .icon > .icon__span::before, .backToTop:hover > .icon > .icon__span::after {
-  border-color: var(--color--darkest);
-}
-
-/**
  * Component - Breadcrumb
  */
 .breadcrumb {
@@ -525,6 +486,47 @@ button, input, select, textarea {
 }
 
 /**
+ * Component - Back To Top
+ */
+.backToTop {
+  position: fixed;
+  right: var(--spacing--small);
+  bottom: var(--spacing--small);
+  z-index: 1000;
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  opacity: 0;
+  transform: translateY(1rem) rotateY(-180deg);
+  transition: all 0.5s ease;
+  text-align: center;
+  outline: 0;
+  cursor: default;
+  pointer-events: none;
+}
+.backToTop.is-active {
+  opacity: 1;
+  transform: translateY(0) rotateY(0);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.backToTop > .icon {
+  border-radius: 50%;
+  background-color: var(--color--primary);
+  transition: background-color 0.25s ease;
+}
+.backToTop > .icon > .icon__span, .backToTop > .icon > .icon__span::before, .backToTop > .icon > .icon__span::after {
+  border-color: var(--color--lightest);
+}
+.backToTop:hover > .icon {
+  background-color: var(--color--primary--active);
+}
+.backToTop:hover > .icon > .icon__span, .backToTop:hover > .icon > .icon__span::before, .backToTop:hover > .icon > .icon__span::after {
+  border-color: var(--color--darkest);
+}
+
+/**
  * Project - Post Item
  */
 .postItem__info {
@@ -609,17 +611,17 @@ button, input, select, textarea {
   justify-content: space-around;
   align-items: center;
 }
-.postList.is-grid .postList__item {
-  width: 100%;
-  padding-inline: var(--container-pad--sm);
-  margin-block-end: var(--spacing--medium);
-}
 @media (min-width: 900px) {
   .postList.is-grid .postList__item {
     flex-grow: 0;
     flex-shrink: 4;
     flex-basis: 24rem;
   }
+}
+.postList.is-grid .postList__item {
+  width: 100%;
+  padding-inline: var(--container-pad--sm);
+  margin-block-end: var(--spacing--medium);
 }
 .postList.is-grid .postItem__more {
   text-align: center;
