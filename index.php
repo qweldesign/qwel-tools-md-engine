@@ -1,19 +1,36 @@
 <?php
 // ContentEngine start!
 require_once __DIR__ . '/inc/ContentEngine.php';
-$cms = new ContentEngine();
+$cms = new ContentEngine([
+  'navigation' => [
+    'topLabel'    => 'QWEL in Action: Creative Tools',
+    'topPath'     => '/tools/',
+    'subdirLabel' => 'Simple CMS',
+    'subdirPath'  => './'
+  ]
+]);
+
+// 記事が見つからない場合と, 一覧のページ番号が範囲外の場合は 404
+if ($cms->is_not_found()) {
+  http_response_code(404);
+}
+
+// HTMLエスケープ
+function e(?string $value): string {
+  return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
 ?>
 
 <!DOCTYPE html>
 <html>
   <head>
-    <?php if ($cms->is_single()) { ?>
+    <?php if ($cms->is_not_found()) { ?>
       <meta name="robots" content="noindex">
     <?php } ?>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php if ($cms->is_single()) { ?>
-      <title><?php echo $cms->get_title() . ' | '; ?>SIMPLE CMS | QWEL in Action</title>
+    <?php if ($cms->is_found()) { ?>
+      <title><?php echo e($cms->get_title()) . ' | '; ?>SIMPLE CMS | QWEL in Action</title>
     <?php } else { ?>
       <title>SIMPLE CMS | QWEL in Action</title>
     <?php } ?>
@@ -28,7 +45,11 @@ $cms = new ContentEngine();
     </header>
     <main id="main" class="main">
       <?php echo $cms->get_breadcrumb(); ?>
-      <?php if (!$cms->is_single()) { ?>
+      <?php if ($cms->is_not_found()) { ?>
+        <h2 class="main__title">ページが見つかりません</h2>
+        <p>お探しの記事は、削除されたか、URLが変更された可能性があります。</p>
+        <p><a href="./">記事一覧へ</a></p>
+      <?php } elseif (!$cms->is_single()) { ?>
         <h2 class="main__title">Simple CMS | Created by <span> ― QWEL.DESIGN</span></h2>
         <ul class="main__list">
           <li class="main__listItem is-spec">Markdown を HTML に変換して表示</li>
@@ -41,22 +62,22 @@ $cms = new ContentEngine();
           <?php foreach ($cms->get_posts() as $post) { ?>
             <li class="postList__item postItem">
               <figure class="postItem__image">
-                <a href="./?slug=<?php echo $post['slug']; ?>">
-                  <img loading="razy" src=".<?php echo $post['img'] ?>">
+                <a href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">
+                  <img loading="lazy" alt="" src=".<?php echo e($post['img'] ?? '') ?>">
                 </a>
               </figure>
               <div class="postItem__content">
                 <div class="postItem__info">
-                  <div class=postItem__date><?php echo date('Y.m.d',strtotime($post['date'])); ?></div>
+                  <div class=postItem__date><?php echo e(ContentEngine::format_date($post['date'] ?? '')); ?></div>
                 </div>
                 <h3 class="postItem__heading">
-                  <a href="./?slug=<?php echo $post['slug']; ?>">
-                    <?php echo $post['title']; ?>
+                  <a href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">
+                    <?php echo e($post['title'] ?? ''); ?>
                   </a>
                 </h3>
                 <p class="postItem__excerpt">
-                  <?php echo $post['summary']; ?>
-                  <a class="postItem__more" href="./?slug=<?php echo $post['slug']; ?>">view more &gt;</a>
+                  <?php echo e($post['summary'] ?? ''); ?>
+                  <a class="postItem__more" href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">view more &gt;</a>
                 </p>
               </div>
             </li>
@@ -66,7 +87,7 @@ $cms = new ContentEngine();
         <?php } else { ?>
           <div class="main__row">
             <article class="main__article">
-              <div><?php echo $cms->get_date(); ?></div>
+              <div><time datetime="<?php echo e($cms->get_datetime()); ?>"><?php echo e($cms->get_date()); ?></time></div>
               <?php echo $cms->get_content(); ?>
             </article>
             <aside class="main__aside">
@@ -74,10 +95,10 @@ $cms = new ContentEngine();
               <ul class="postIndex">
                 <?php foreach ($cms->get_posts(1, 4) as $post) { ?>
                   <li class="postIndex__item">
-                    <a href="./?slug=<?php echo $post['slug']; ?>">
-                      <img loading="razy" class="postIndex__image" src=".<?php echo $post['img']; ?>">
-                      <span class="postIndex__date"><?php echo date('Y.m.d',strtotime($post['date'])); ?></span>
-                      <span class="postIndex__title"><?php echo $post['title']; ?></span>
+                    <a href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">
+                      <img loading="lazy" alt="" class="postIndex__image" src=".<?php echo e($post['img'] ?? ''); ?>">
+                      <span class="postIndex__date"><?php echo e(ContentEngine::format_date($post['date'] ?? '')); ?></span>
+                      <span class="postIndex__title"><?php echo e($post['title'] ?? ''); ?></span>
                     </a>
                   </li>
                 <?php } ?>
