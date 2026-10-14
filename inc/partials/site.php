@@ -114,3 +114,10 @@ function render_footer(): void {
 </html>
 <?php
 }
+
+// サイトの見出し (h1. トップページと個別記事で使う)
+function render_site_heading(): void {
+  ?>
+      <h1 class="main__title"><?= e(SITE_HEADING) ?><?php if (SITE_HEADING_SUB) { ?> <span><?= e(SITE_HEADING_SUB) ?></span><?php } ?></h1>
+<?php
+}

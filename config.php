@@ -14,6 +14,9 @@ const SITE_NAME = 'SIMPLE CMS | QWEL in Action';
 const SITE_URL = 'https://qwel.design';
 // サイトのルートのパス (ドメイン直下なら '/'. 例: /tools/simple-cms/ に置く場合)
 const SITE_ROOT = '/tools/simple-cms/';
+// サイトの見出し (トップページと個別記事の h1. SITE_HEADING_SUB は改行して小さく出す副題. 不要なら空文字)
+const SITE_HEADING = 'Simple CMS | Created by';
+const SITE_HEADING_SUB = '― QWEL.DESIGN';
 // サイトの説明 (description の既定値)
 const SITE_DESCRIPTION = 'Markdown ファイルを記事として読み込み、HTML に変換して表示するシンプルな PHP エンジンのデモです。';
 // OGP 画像の既定値 (サイトのルートからのパス)
@@ -31,7 +34,7 @@ const SITE_LOGO_LINK = 'https://qwel.design/';
 
 // ヘッダーのナビ (サイトのルートからのパス => 表示名. 不要なら空の配列)
 const SITE_NAV = [
-  'blog/'       => 'Blog',
+  ''            => 'Top',
   'page/about/' => 'About',
 ];
 
@@ -44,10 +47,14 @@ const SITE_BREADCRUMB = [
 // フッターのリンク (サイトのルートからのパス => 表示名)
 const SITE_FOOTER_LINKS = [
   ''            => 'Top',
-  'blog/'       => 'Blog',
-  'page/'       => 'Pages',
+  'page/about/' => 'About',
   'sitemap.xml' => 'Sitemap',
 ];
+
+// トップページ・個別記事の右の aside に並べる記事 (投稿タイプと件数)
+// このサイトでは投稿タイプの一覧ページを持たないので, ここが記事の一覧の代わりになる
+const SITE_LATEST_TYPE = 'blog';
+const SITE_LATEST_COUNT = 10;
 
 // フッターの SNS など (icon は icons.svg の symbol の id)
 const SITE_SNS = [
@@ -76,6 +83,7 @@ const SITE_POST_TYPES = [
     'path'      => 'blog/',
     'dir'       => 'content/blog',
     'count'     => 10,
+    'list'      => false, // 一覧ページは持たない (サイトマップに載せない)
     'show_date' => true,
     'lead'      => 'Markdown で書いた記事のサンプルです。',
   ],
@@ -85,6 +93,7 @@ const SITE_POST_TYPES = [
     'path'      => 'page/',
     'dir'       => 'content/page',
     'count'     => null,
+    'list'      => false,
     'show_date' => false,
     'lead'      => '',
   ],

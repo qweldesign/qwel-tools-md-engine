@@ -41,6 +41,7 @@ inc/                       エンジン (ContentEngine など) とテンプレ�
 サイトごとに変わる値は `config.php` にまとめる。`inc/` 以下には書かない。
 
 - `SITE_URL`, `SITE_ROOT`: サイトの URL と, ルートのパス (ドメイン直下なら `/`, サブディレクトリなら `/tools/simple-cms/` のように)
+- `SITE_HEADING`, `SITE_HEADING_SUB`: トップページと個別記事の h1 (個別記事のタイトルは本文の先頭に h2 で出す)
 - `SITE_NAV`, `SITE_FOOTER_LINKS`, `SITE_SNS`: ヘッダー・フッターのリンク
 - `SITE_BREADCRUMB`: パンくずの先頭の階層
 - `SITE_POST_TYPES`: 投稿タイプ (表示名, URL, 原稿のディレクトリ, 1ページの件数, 日付の表示)
