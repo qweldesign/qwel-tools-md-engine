@@ -196,6 +196,17 @@ button, input, select, textarea {
 
 #logo {
   width: 7.2rem;
+  margin: 0;
+}
+
+.header__nav ul {
+  list-style: none;
+  padding-inline-start: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing--x-small) var(--spacing--medium);
+  margin: 0;
+  font-size: var(--font-size--small);
 }
 
 /**
@@ -237,6 +248,10 @@ button, input, select, textarea {
   padding-inline-end: 0.5em;
   color: var(--color--secondary);
   font-weight: 700;
+}
+.main__date, .main__lead {
+  color: var(--color--dark);
+  font-size: var(--font-size--small);
 }
 .main__row {
   display: flex;
@@ -305,6 +320,23 @@ button, input, select, textarea {
 }
 .footer__item .icon {
   margin-inline-end: var(--spacing--x-small);
+}
+.footer__nav ul {
+  list-style: none;
+  padding-inline-start: 0;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing--x-small) var(--spacing--medium);
+  margin: 0 auto var(--spacing--medium);
+  font-size: var(--small-font-size);
+  line-height: var(--small-line-height);
+  letter-spacing: var(--small-letter-spacing);
+}
+.footer__copyright {
+  display: block;
+  margin-block-start: var(--spacing--medium);
 }
 .footer small {
   font-size: 0.875rem;
@@ -1258,6 +1290,40 @@ button, input, select, textarea {
   margin-block-end: var(--spacing--x-small);
   font-size: var(--font-size--small);
   line-height: 1;
+}
+
+/**
+ * Project - Post Nav
+ * 個別記事の下の, 前後の記事へのリンク
+ */
+.postNav {
+  display: grid;
+  gap: var(--spacing--small);
+  margin-block: var(--spacing--large);
+}
+@media (min-width: 900px) {
+  .postNav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.postNav__link {
+  display: block;
+  padding: var(--spacing--small);
+  border: 1px solid var(--color--light);
+  border-radius: var(--spacing--x-small);
+  text-decoration: none;
+}
+.postNav__link.is-next {
+  grid-column: -2;
+  text-align: right;
+}
+.postNav__label {
+  display: block;
+  color: var(--color--dark);
+  font-size: var(--font-size--small);
+}
+.postNav__title {
+  display: block;
 }
 
 /**

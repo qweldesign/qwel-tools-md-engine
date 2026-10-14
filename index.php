@@ -1,130 +1,22 @@
 <?php
-// ContentEngine start!
-require_once __DIR__ . '/inc/ContentEngine.php';
-$cms = new ContentEngine([
-  'navigation' => [
-    'topLabel'    => 'QWEL in Action: Creative Tools',
-    'topPath'     => '/tools/',
-    'subdirLabel' => 'Simple CMS',
-    'subdirPath'  => './'
-  ]
-]);
+/**
+ * トップページ (記事一覧) と個別記事
+ * 記事は content/*.md に置く. 設定は config.php
+ */
+require_once __DIR__ . '/inc/templates/posts.php';
 
-// 記事が見つからない場合と, 一覧のページ番号が範囲外の場合は 404
-if ($cms->is_not_found()) {
-  http_response_code(404);
-}
-
-// HTMLエスケープ
-function e(?string $value): string {
-  return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
-}
+render_posts('blog', [
+  // 一覧の1ページ目の見出しの代わりに, このエンジンの紹介を出す
+  'intro' => function (): void {
 ?>
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <?php if ($cms->is_not_found()) { ?>
-      <meta name="robots" content="noindex">
-    <?php } ?>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php if ($cms->is_found()) { ?>
-      <title><?php echo e($cms->get_title()) . ' | '; ?>SIMPLE CMS | QWEL in Action</title>
-    <?php } else { ?>
-      <title>SIMPLE CMS | QWEL in Action</title>
-    <?php } ?>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Sans:wght@100..900&family=Noto+Serif:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
-  </head>
-  <body>
-    <header class="header">
-      <h1 id="logo"><a href="https://qwel.design/"><img src="./logo_animation.svg" alt="QWEL in Action"></a></h1>
-    </header>
-    <main id="main" class="main">
-      <?php echo $cms->get_breadcrumb(); ?>
-      <?php if ($cms->is_not_found()) { ?>
-        <h2 class="main__title">ページが見つかりません</h2>
-        <p>お探しの記事は、削除されたか、URLが変更された可能性があります。</p>
-        <p><a href="./">記事一覧へ</a></p>
-      <?php } elseif (!$cms->is_single()) { ?>
-        <h2 class="main__title">Simple CMS | Created by <span> ― QWEL.DESIGN</span></h2>
-        <ul class="main__list">
-          <li class="main__listItem is-spec">Markdown を HTML に変換して表示</li>
-          <li class="main__listItem is-spec">パンくずリストやページネーションを自動生成</li>
-          <li class="main__listItem is-spec">データベース不要、ファイルベースで管理</li>
-          <li class="main__listItem is-spec">PHP のみで動作、軽量・シンプル</li>
-        </ul>
-        <h3 class="text-center my-large">SAMPLE BLOG</h3>
-        <ul class="postList is-list">
-          <?php foreach ($cms->get_posts() as $post) { ?>
-            <li class="postList__item postItem">
-              <figure class="postItem__image">
-                <a href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">
-                  <img loading="lazy" alt="" src=".<?php echo e($post['img'] ?? '') ?>">
-                </a>
-              </figure>
-              <div class="postItem__content">
-                <div class="postItem__info">
-                  <div class=postItem__date><?php echo e(ContentEngine::format_date($post['date'] ?? '')); ?></div>
-                </div>
-                <h3 class="postItem__heading">
-                  <a href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">
-                    <?php echo e($post['title'] ?? ''); ?>
-                  </a>
-                </h3>
-                <p class="postItem__excerpt">
-                  <?php echo e($post['summary'] ?? ''); ?>
-                  <a class="postItem__more" href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">view more &gt;</a>
-                </p>
-              </div>
-            </li>
-          <?php } ?>
-        </ul>
-        <?php echo $cms->pagination(); ?>
-        <?php } else { ?>
-          <div class="main__row">
-            <article class="main__article">
-              <div><time datetime="<?php echo e($cms->get_datetime()); ?>"><?php echo e($cms->get_date()); ?></time></div>
-              <?php echo $cms->get_content(); ?>
-            </article>
-            <aside class="main__aside">
-              <h2>最新記事</h2>
-              <ul class="postIndex">
-                <?php foreach ($cms->get_posts(1, 4) as $post) { ?>
-                  <li class="postIndex__item">
-                    <a href="./?slug=<?php echo e(rawurlencode($post['slug'])); ?>">
-                      <img loading="lazy" alt="" class="postIndex__image" src=".<?php echo e($post['img'] ?? ''); ?>">
-                      <span class="postIndex__date"><?php echo e(ContentEngine::format_date($post['date'] ?? '')); ?></span>
-                      <span class="postIndex__title"><?php echo e($post['title'] ?? ''); ?></span>
-                    </a>
-                  </li>
-                <?php } ?>
-              </ul>
-            </aside>
-          </div>
-        <?php } ?>
-      </div>
-    </main>
-    <footer id="footer" class="footer">
-      <div class="footer__inner">
-        <a class="footer__item is-github" href="https://github.com/qweldesign" target="_blank" rel="noopener">
-          <svg class="icon is-si-github is-md" width="36" height="36" aria-hidden="true">
-            <use href="./icons.svg#si-github"></use>
-          </svg>
-          <span>GitHub</span>
-        </a>
-        <a class="footer__item is-contact" href="https://qwel.design/tools/contact-form/" target="_blank" rel="noopener">
-          <svg class="icon is-si-mail is-md" width="36" height="36" aria-hidden="true">
-            <use href="./icons.svg#si-mail"></use>
-          </svg>
-          <span>Contact Me</span>
-        </a>
-        <small class="footer__copyright"></small>
-      </div>
-    </footer>
-    <script src="./init.js" type="module"></script>
-  </body>
-</html>
+      <h1 class="main__title">Simple CMS | Created by <span> ― QWEL.DESIGN</span></h1>
+      <ul class="main__list">
+        <li class="main__listItem is-spec">Markdown を HTML に変換して表示</li>
+        <li class="main__listItem is-spec">パンくずリストやページネーションを自動生成</li>
+        <li class="main__listItem is-spec">データベース不要、ファイルベースで管理</li>
+        <li class="main__listItem is-spec">PHP のみで動作、軽量・シンプル</li>
+      </ul>
+      <h2 class="text-center my-large">SAMPLE BLOG</h2>
+<?php
+  },
+]);

@@ -10,4 +10,15 @@
 
 #logo {
   width: 7.2rem;
+  margin: 0;
+}
+
+// ナビ (config.php の SITE_NAV)
+.header__nav ul {
+  @include list-unstyled();
+  display: flex;
+  flex-wrap: wrap;
+  gap: space("x-small") space("medium");
+  margin: 0;
+  font-size: font-size("small");
 }
