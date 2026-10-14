@@ -1,27 +1,15 @@
 /**
  * Project - Post Index
+ * 個別記事の横の「最新記事」
  */
 
 .postIndex {
   @include list-unstyled();
-  @include row(flex-start, flex-start);
-  gap: space("medium");
-  
-  & > * {
-    flex: 0 1 calc(50% - #{space("medium")} / 2);
-  }
-
-  @media (min-width: breakpoint("md")) {
-    display: block;
-  }
 
   &__item {
     display: block;
-    margin: space("medium") 0;
-
-    @media (min-width: breakpoint("lg")) {
-      margin-block-end: space("large");
-    }
+    width: min(100%, 18rem);
+    margin: space("medium") auto space("large");
   }
 
   &__image {
@@ -31,7 +19,11 @@
   &__date, &__title {
     display: block;
     margin-block-end: space("x-small");
-    font-size: font-size("small");
     line-height: 1;
+  }
+
+  &__date {
+    color: theme-color("dark");
+    font-size: font-size("small");
   }
 }

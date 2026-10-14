@@ -1,16 +1,15 @@
 /**
- * Header
+ * Layout - Header
  */
 
 .header {
-  width: min(100%, 768px);
+  width: min(100%, 1000px);
   margin: 0 auto;
-  padding: 0 clamp(0.75rem, 2%, 1.5rem);
+  padding: 0 clamp(0.75rem, 2%, 1.25rem);
 }
 
 #logo {
   width: 7.2rem;
-  margin: 0;
 }
 
 // ナビ (config.php の SITE_NAV)
@@ -19,6 +18,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: space("x-small") space("medium");
-  margin: 0;
+  margin: 0 0 space();
   font-size: font-size("small");
+  letter-spacing: var(--heading-letter-spacing);
 }
