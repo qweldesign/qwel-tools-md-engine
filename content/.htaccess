@@ -1,0 +1,3 @@
+# Markdown の原稿は直接公開しない (テンプレート経由で表示する)
+# ※ content/images/ だけは, そのディレクトリの .htaccess で画像の公開を許可している
+Require all denied

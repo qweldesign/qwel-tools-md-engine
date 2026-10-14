@@ -1,0 +1,28 @@
+# サイト全体の設定 (Apache)
+
+# 設定ファイルは直接公開しない
+<Files "config.php">
+  Require all denied
+</Files>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # サイトのルートの URL (例: /tools/simple-cms/) を BASE に入れる
+  RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+  RewriteRule ^(.*)$ - [E=BASE:%1]
+
+  # サイトマップは sitemap.php が content/ から自動で作る
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+  # 旧バージョン (トップの ?slug=xxx, ?page=2) の URL を, 投稿タイプのディレクトリへ恒久的に転送する
+  # (旧バージョンから移行しない場合は削除してよい)
+  RewriteCond %{THE_REQUEST} \s[^?\s]*\?(?:[^\s&]*&)*slug=about[\s&]
+  RewriteRule ^(?:index\.php)?$ %{ENV:BASE}page/about/? [R=301,L]
+  RewriteCond %{THE_REQUEST} \s[^?\s]*\?(?:[^\s&]*&)*slug=([A-Za-z0-9_-]+)[\s&]
+  RewriteRule ^(?:index\.php)?$ %{ENV:BASE}blog/%1/? [R=301,L]
+  RewriteCond %{THE_REQUEST} \s[^?\s]*\?(?:[^\s&]*&)*page=1[\s&]
+  RewriteRule ^(?:index\.php)?$ %{ENV:BASE}blog/? [R=301,L]
+  RewriteCond %{THE_REQUEST} \s[^?\s]*\?(?:[^\s&]*&)*page=([0-9]+)[\s&]
+  RewriteRule ^(?:index\.php)?$ %{ENV:BASE}blog/page/%1/? [R=301,L]
+</IfModule>

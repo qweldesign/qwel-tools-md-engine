@@ -40,6 +40,7 @@ function post_type(string $type): array {
     'count'     => 10,
     'show_date' => true,
     'lead'      => '',
+    'list'      => true,
   ];
 }
 
