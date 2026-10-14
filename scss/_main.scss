@@ -47,6 +47,12 @@
     }
   }
 
+  // 個別記事の日付, 一覧の見出しの下の文
+  &__date, &__lead {
+    color: theme-color("dark");
+    font-size: font-size("small");
+  }
+
   &__row {
     @include row(flex-start, flex-start);
   }
