@@ -21,7 +21,7 @@ const SITE_OGP_IMAGE = 'content/images/about/fig_story.jpg';
 // 記事一覧のサムネイルの既定値 (記事にアイキャッチがない場合)
 const SITE_THUMBNAIL_IMAGE = 'content/images/about/fig_story.jpg';
 // Google Fonts などの読み込み (不要なら空文字)
-const SITE_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Sans:wght@100..900&family=Noto+Serif:wght@100..900&display=swap';
+const SITE_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Zen+Old+Mincho:wght@600&display=swap';
 // 言語
 const SITE_LANG = 'ja';
 
