@@ -54,7 +54,6 @@ function render_header(array $page = []): void {
     <link rel="stylesheet" href="<?= e(SITE_FONTS_URL) ?>">
 <?php } ?>
     <link rel="stylesheet" href="<?= path('style.css') ?>">
-    <link rel="icon" href="<?= path('favicon.ico') ?>">
   </head>
   <body>
     <header class="header">
@@ -112,5 +111,12 @@ function render_footer(): void {
     <script src="<?= path('init.js') ?>" type="module"></script>
   </body>
 </html>
+<?php
+}
+
+// サイトの見出し (h1. トップページと個別記事で使う)
+function render_site_heading(): void {
+  ?>
+      <h1 class="main__title"><?= e(SITE_HEADING) ?><?php if (SITE_HEADING_SUB) { ?> <span><?= e(SITE_HEADING_SUB) ?></span><?php } ?></h1>
 <?php
 }
