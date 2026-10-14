@@ -92,17 +92,23 @@ function copyright_years(): string {
   return SITE_START_YEAR < $current ? SITE_START_YEAR . ' - ' . $current : (string)$current;
 }
 
+// パンくずの先頭の階層 (SITE_BREADCRUMB をリンクに使える URL にしたもの)
+function site_breadcrumb_parents(): array {
+  return array_map(fn($crumb) => ['label' => $crumb['label'], 'path' => path($crumb['path'])], SITE_BREADCRUMB);
+}
+
 // 投稿タイプの ContentEngine を作る (パンくず・ページ送りの設定も済ませる)
 function content_engine(string $type, array $options = []): ContentEngine {
   $config = post_type($type);
-  $parents = array_map(fn($crumb) => ['label' => $crumb['label'], 'path' => path($crumb['path'])], SITE_BREADCRUMB);
+  $parents = site_breadcrumb_parents();
   return new ContentEngine($options + [
     'dir'     => dirname(__DIR__) . '/' . trim($config['dir'], '/') . '/',
     'count'   => $config['count'],
     'baseUrl' => path(),
     'navigation' => [
       'parents'      => $parents,
-      'subdirLabel'  => $config['label'],
+      // 一覧ページは持たないので, パンくずに一覧の階層を出さない (親サイト > このサイト > 記事)
+      'subdirLabel'  => null,
       'subdirPath'   => type_url($type),
       'pageUrl'      => page_url($type, '%d'),
       'firstPageUrl' => type_url($type),
