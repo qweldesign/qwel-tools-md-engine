@@ -30,15 +30,24 @@ const SITE_LOGO = 'logo_animation.svg';
 const SITE_LOGO_LINK = 'https://qwel.design/';
 
 // ヘッダーのナビ (サイトのルートからのパス => 表示名. 不要なら空の配列)
-const SITE_NAV = [];
+const SITE_NAV = [
+  'blog/'       => 'Blog',
+  'page/about/' => 'About',
+];
 
 // パンくずの先頭の階層 (path はサイトのルートからのパス, または http から始まる URL)
 const SITE_BREADCRUMB = [
   ['label' => 'QWEL in Action: Creative Tools', 'path' => 'https://qwel.design/tools/'],
+  ['label' => 'Simple CMS', 'path' => ''],
 ];
 
 // フッターのリンク (サイトのルートからのパス => 表示名)
-const SITE_FOOTER_LINKS = [];
+const SITE_FOOTER_LINKS = [
+  ''            => 'Top',
+  'blog/'       => 'Blog',
+  'page/'       => 'Pages',
+  'sitemap.xml' => 'Sitemap',
+];
 
 // フッターの SNS など (icon は icons.svg の symbol の id)
 const SITE_SNS = [
@@ -54,22 +63,32 @@ const SITE_START_YEAR = 2019;
  * 投稿タイプ
  * キー: 投稿タイプの名前
  * label: 表示名 (一覧の見出し, パンくず)
- * path: 一覧の URL (サイトのルートからのパス. '' はトップ)
+ * path: 一覧の URL (サイトのルートからのパス. 同じ名前のディレクトリに index.php と .htaccess を置く)
  * dir: Markdown を置くディレクトリ (サイトのルートからのパス)
+ * list: 一覧ページをサイトマップに載せるか (規定で true)
  * count: 一覧の1ページあたりの件数 (null で全件)
  * show_date: 日付を表示するか
  * lead: 一覧の見出しの下の文
  */
 const SITE_POST_TYPES = [
   'blog' => [
-    'label'     => 'Simple CMS',
-    'path'      => '',
-    'dir'       => 'content',
+    'label'     => 'Blog',
+    'path'      => 'blog/',
+    'dir'       => 'content/blog',
     'count'     => 10,
     'show_date' => true,
+    'lead'      => 'Markdown で書いた記事のサンプルです。',
+  ],
+  // 固定ページ (日付を出さず, 一覧は全件を1ページに出す)
+  'page' => [
+    'label'     => 'Pages',
+    'path'      => 'page/',
+    'dir'       => 'content/page',
+    'count'     => null,
+    'show_date' => false,
     'lead'      => '',
   ],
 ];
 
 // URL の形式 (false: ?slug=xxx, ?page=2 / true: xxx/, page/2/ ※ .htaccess のリライトが必要)
-const SITE_PRETTY_URLS = false;
+const SITE_PRETTY_URLS = true;

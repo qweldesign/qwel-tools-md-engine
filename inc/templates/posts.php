@@ -58,8 +58,13 @@ function render_posts(string $type, array $options = []): void {
     <main id="main" class="main">
       <?= $cms->get_breadcrumb() ?>
 <?php if ($cms->is_found()) { ?>
+<?php if ($latest > 0) { ?>
       <div class="main__row">
         <article class="main__article">
+<?php } else { ?>
+      <div>
+        <article>
+<?php } ?>
           <h1 class="main__title"><?= e($cms->get_title()) ?></h1>
 <?php if ($config['show_date'] && $cms->get_meta('date')) { ?>
           <p class="main__date"><?= date_tag($cms->get_meta('date')) ?></p>

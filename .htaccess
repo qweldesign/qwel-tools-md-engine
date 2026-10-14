@@ -1,0 +1,17 @@
+# サイト全体の設定 (Apache)
+
+# 設定ファイルは直接公開しない
+<Files "config.php">
+  Require all denied
+</Files>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # サイトのルートの URL (例: /tools/simple-cms/) を BASE に入れる
+  RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+  RewriteRule ^(.*)$ - [E=BASE:%1]
+
+  # サイトマップは sitemap.php が content/ から自動で作る
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
+</IfModule>
