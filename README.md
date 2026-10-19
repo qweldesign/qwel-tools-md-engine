@@ -16,6 +16,7 @@ Markdown ファイルを記事として読み込み、HTML に変換して表示
 - 複数の投稿タイプ (ブログ, 固定ページなど) をディレクトリごとに管理
 - `/blog/xxx/` 形式の URL, サイトマップの自動生成
 - 記事取得のための API 有り
+- お問い合わせフォーム (入力 → 確認 → 完了. 管理者宛と自動返信のメールを SMTP で送信)
 - PHP のみで動作, 軽量・シンプル
 
 ---
@@ -30,10 +31,14 @@ index.php                  トップページ
 blog/index.php, .htaccess  投稿タイプ「blog」の一覧と個別記事
 page/index.php, .htaccess  投稿タイプ「page」(固定ページ) の一覧と個別のページ
 sitemap.php                サイトマップ (/sitemap.xml)
-api.php                    記事の API (JSON)
+api/posts.php              記事の API (JSON)
+api/send.php               お問い合わせフォームの送信 (JSON)
 content/blog/*.md          原稿 (投稿タイプごとにディレクトリを分ける)
 content/images/            原稿用の画像
-inc/                       エンジン (ContentEngine など) とテンプレート
+contact/                   お問い合わせフォーム (入力・確認・完了の画面)
+inc/                       エンジン (ContentEngine など) とテンプレート (Web からは読めない)
+inc/composer.json          お問い合わせフォームのメール送信に使う PHPMailer (composer install で inc/vendor/ に入る)
+inc/.env.example           お問い合わせフォームの設定 (宛先・SMTP) の見本 (.env としてコピーして使う)
 ```
 
 ### 設定
@@ -81,10 +86,30 @@ slug に `page` は使えない (ページ送りの `/blog/page/2/` と重なる
 - `.htaccess` (Apache の mod_rewrite) で URL を振り分ける。`content/` (画像以外), `inc/`, `config.php` は直接のアクセスを禁止している
 - 存在しない記事と, 範囲外のページ番号は 404 を返す
 
+### お問い合わせフォーム
+
+`/contact/` (入力) → `/contact/confirm/` (確認) → `/contact/thanks/` (完了) の3画面。入力内容は sessionStorage で確認画面へ渡し, 確認画面から `api/send.php` へ送信する。
+
+1. `inc/` で `composer install` を実行し、PHPMailer を導入する
+2. `inc/.env.example` を `inc/.env` としてコピーし、宛先・SMTP の設定を書き換える
+3. `config.php` の `SITE_CONTACT` (タイトル, 説明文, 自動返信の署名など) と `SITE_CONTACT_FIELDS` (項目) を書き換える
+4. `inc/` (`inc/vendor/` を含む) ごとサーバーにアップロードする
+
+秘密の設定 (宛先・SMTP) は `inc/.env` に書く (各項目の説明は `inc/.env.example` を参照)。`.env` には SMTP のパスワードが含まれるため Git には含めない。`inc/.htaccess` で `inc/` ごと Web から読めないようにしているが、可能であれば公開ディレクトリの外に置き、`config.php` の `SITE_CONTACT` の `env` を書き換えるとより安全。
+
+設定に不備があると `api/send.php` は 500 を返し、内容をサーバーのエラーログに残す。
+
+- 項目は `SITE_CONTACT_FIELDS` から, 入力欄・確認画面・メール本文・サーバー側の検証をまとめて作る (`text`, `email`, `tel`, `url`, `textarea`, `select`, `radio`, `checkbox`)
+- 最初の `email` 項目を, 自動返信の宛先と管理者宛メールの返信先にする
+- 迷惑メール対策: Origin / Referer のチェック, 見えない入力欄 (ハニーポット), 同じセッションからの送信間隔の制限 (`SITE_CONTACT` の `interval` 秒)
+- 自動返信だけ失敗した場合は, ログに残して送信成功として扱う
+- メールの送信には [PHPMailer](https://github.com/PHPMailer/PHPMailer) を Composer で導入して使う (更新は `composer update`)。`inc/vendor/` は Git に含めず, `inc/.htaccess` で Web から読めないようにしている
+- `inc/vendor/` がない場合も入力画面などは表示でき, 送信時に 500 を返して理由をエラーログに残す
+
 ### API
 
-- 一覧: `api.php?type=blog&page=1&count=10` → `{ type, page, totalPages, total, posts: [{ title, slug, date, summary, img, url }] }`
-- 個別記事: `api.php?type=blog&slug=xxx` → `{ title, slug, date, summary, img, url, content }`
+- 一覧: `api/posts.php?type=blog&page=1&count=10` → `{ type, page, totalPages, total, posts: [{ title, slug, date, summary, img, url }] }`
+- 個別記事: `api/posts.php?type=blog&slug=xxx` → `{ title, slug, date, summary, img, url, content }`
 
 ---
 
@@ -94,7 +119,7 @@ slug に `page` は使えない (ページ送りの `/blog/page/2/` と重なる
 - UIの実装・運用・保守に伴うコストとセキュリティリスクを抑えたかった
 - クライアントから文章と画像を提供してもらい, 更新自体はエンジニアが行う運用方針でOK
 - Markdown をそのまま運用することで, Git 管理による保守が可能な環境を試してみたかった
-- 外部依存は最小限 (Markdown パーサーのみ) に抑え, シンプルな設計を目指す
+- 外部依存は最小限 (Markdown パーサーと, お問い合わせフォームのメール送信の PHPMailer (Composer) のみ) に抑え, シンプルな設計を目指す
 
 ---
 

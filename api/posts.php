@@ -2,16 +2,16 @@
 /**
  * 記事の API (JSON)
  *
- * 一覧: api.php?type=blog&page=1&count=10
+ * 一覧: api/posts.php?type=blog&page=1&count=10
  *   → { "type", "page", "totalPages", "total", "posts": [{ "title", "slug", "date", "summary", "img", "url" }, ...] }
  *   type: 投稿タイプ (規定で config.php の最初の投稿タイプ)
  *   count: 1ページあたりの件数 (1〜50. 規定で投稿タイプの count, なければ 10)
- * 個別記事: api.php?type=blog&slug=xxx
+ * 個別記事: api/posts.php?type=blog&slug=xxx
  *   → { "title", "slug", "date", "summary", "img", "url", "content" (HTML) }
  * img, url は絶対URL. 見つからない場合は 404
  */
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/inc/helpers.php';
+require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/inc/helpers.php';
 
 header('Content-Type: application/json; charset=UTF-8');
 // 他のサイトからも読めるようにする

@@ -46,13 +46,14 @@ const SITE_FOOTER_LINKS = [
   ''            => 'Top',
   'blog/'       => 'Blog',
   'page/'       => 'Pages',
+  'contact/'    => 'Contact',
   'sitemap.xml' => 'Sitemap',
 ];
 
-// フッターの SNS など (icon は icons.svg の symbol の id)
+// フッターの SNS など (url は http から始まる URL, またはサイトのルートからのパス. icon は icons.svg の symbol の id)
 const SITE_SNS = [
   ['label' => 'GitHub', 'url' => 'https://github.com/qweldesign', 'icon' => 'si-github'],
-  ['label' => 'Contact Me', 'url' => 'https://qwel.design/tools/contact-form/', 'icon' => 'si-mail'],
+  ['label' => 'Contact Me', 'url' => 'contact/', 'icon' => 'si-mail'],
 ];
 
 // 著作権表示 (開始年 - 今年 運営者)
@@ -92,3 +93,69 @@ const SITE_POST_TYPES = [
 
 // URL の形式 (false: ?slug=xxx, ?page=2 / true: xxx/, page/2/ ※ .htaccess のリライトが必要)
 const SITE_PRETTY_URLS = true;
+
+// 投稿タイプ以外のページ (サイトのルートからのパス. サイトマップに載せる)
+const SITE_PAGES = [
+  'contact/',
+];
+
+/**
+ * お問い合わせフォーム (/contact/)
+ * SMTP のパスワードなど秘密の値は inc/.env に書く (inc/.env.example を参照)
+ *
+ * path: フォームの URL (サイトのルートからのパス. 同じ名前のディレクトリに index.php, confirm/, thanks/ を置く. 送信は api/send.php)
+ * title: ページのタイトル
+ * lead: フォームの上の説明文 (HTML 可)
+ * interval: 同じ人 (セッション) が続けて送信できるまでの秒数 (0 で制限しない)
+ * reply_footer: 自動返信メールの末尾に付ける文
+ * env: .env の場所 (公開ディレクトリの外に置く場合は, このパスを書き換える)
+ */
+const SITE_CONTACT = [
+  'path'         => 'contact/',
+  'title'        => 'お問い合わせ',
+  'lead'         => 'このページは、<strong>QWEL.DESIGN</strong> へのお問い合わせフォームです。<br>お気軽にお問い合わせください。',
+  'interval'     => 60,
+  'reply_footer' => "
+後日ご返信致しますので今しばらくお待ちください。
+
+────────────────────────────────────────────────
+福井の物作りのためのweb制作&プログラミング教室
+QWEL.DESIGN (クヴェル・デザイン)
+────────────────────────────────────────────────
+",
+  'env'          => __DIR__ . '/inc/.env',
+];
+
+/**
+ * お問い合わせフォームの項目 (キーが name 属性. 並び順に表示する)
+ * label: 項目名 (確認画面とメール本文にも使う)
+ * type: text, email, tel, url, textarea, select, radio, checkbox
+ *       (email の最初の項目を, 自動返信の宛先と管理者宛メールの返信先にする)
+ * required: 必須か
+ * options: select, radio, checkbox の選択肢
+ * placeholder, autocomplete: 入力欄の属性 (任意)
+ */
+const SITE_CONTACT_FIELDS = [
+  'name' => [
+    'label'        => 'お名前',
+    'type'         => 'text',
+    'required'     => true,
+    'autocomplete' => 'name',
+  ],
+  'email' => [
+    'label'        => 'メールアドレス',
+    'type'         => 'email',
+    'required'     => true,
+    'autocomplete' => 'email',
+  ],
+  'subject' => [
+    'label'   => '件名',
+    'type'    => 'select',
+    'options' => ['ご質問・お問い合わせ', 'その他'],
+  ],
+  'message' => [
+    'label'    => 'メッセージ本文',
+    'type'     => 'textarea',
+    'required' => true,
+  ],
+];

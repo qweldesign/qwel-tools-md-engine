@@ -1,2 +1,2 @@
-# PHP の部品は直接公開しない
+# PHP の部品・Composer のライブラリ・設定ファイル (.env) は直接公開しない
 Require all denied

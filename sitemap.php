@@ -26,6 +26,11 @@ foreach (array_keys(SITE_POST_TYPES) as $type) {
   }
 }
 
+// 投稿タイプ以外のページ (config.php の SITE_PAGES)
+foreach (SITE_PAGES as $pagePath) {
+  $urls[] = ['path' => $pagePath, 'date' => ''];
+}
+
 // トップページ (最新記事を載せているので, 全体の最新の日付にする)
 array_unshift($urls, ['path' => '', 'date' => $latestAll]);
 
