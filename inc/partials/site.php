@@ -96,7 +96,8 @@ function render_footer(): void {
 <?php if (SITE_SNS) { ?>
       <div class="footer__inner">
 <?php foreach (SITE_SNS as $sns) { ?>
-        <a class="footer__item" href="<?= e($sns['url']) ?>" target="_blank" rel="noopener">
+<?php $external = (bool)preg_match('#^https?://#', $sns['url']); ?>
+        <a class="footer__item" href="<?= e(path($sns['url'])) ?>"<?= $external ? ' target="_blank" rel="noopener"' : '' ?>>
 <?php if (!empty($sns['icon'])) { ?>
           <svg class="icon is-md" width="36" height="36" aria-hidden="true">
             <use href="<?= path('icons.svg') ?>#<?= e($sns['icon']) ?>"></use>

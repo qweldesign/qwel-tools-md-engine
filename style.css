@@ -1421,6 +1421,125 @@ button, input, select, textarea {
   color: var(--color--darkest);
 }
 
+.form__choices {
+  list-style: none;
+  padding-inline-start: 0;
+  margin: 0;
+}
+.form__choices li {
+  margin-block: 0 var(--spacing--x-small);
+}
+.form__choices label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing--x-small);
+}
+
+.form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.confirm {
+  text-align: center;
+}
+.confirm .main__lead {
+  text-align: left;
+}
+.confirm table {
+  width: 100%;
+}
+@media (max-width: 599.9px) {
+  .confirm table, .confirm table thead, .confirm table tbody, .confirm table tr, .confirm table th, .confirm table td {
+    display: block;
+  }
+}
+.confirm table thead, .confirm table tbody {
+  width: 100%;
+}
+.confirm table thead {
+  border: 0;
+}
+.confirm table tr {
+  border-block-end: 1px solid var(--color--lighter);
+}
+.confirm table tr:first-child {
+  border-block-start: 1px solid var(--color--lighter);
+}
+.confirm table th, .confirm table td {
+  padding: var(--spacing--small);
+  border: 0;
+}
+.confirm table {
+  margin-block-end: var(--spacing--medium);
+  text-align: left;
+}
+.confirm table th {
+  width: 12rem;
+}
+.confirm table td {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.confirm__message {
+  margin-block: 0 var(--spacing--medium);
+  padding: var(--spacing--small);
+  border-radius: var(--spacing--x-small);
+  background-color: rgba(226.44, 129.336, 18.36, 0.15);
+  white-space: pre-line;
+}
+.confirm [type=submit], .confirm [type=button] {
+  display: inline-block;
+  width: 14rem;
+  height: 3.5rem;
+  line-height: 3.5rem;
+  margin: 0 var(--spacing--small) var(--spacing--small);
+}
+.confirm [type=submit], .confirm [type=submit]:active, .confirm [type=button], .confirm [type=button]:active {
+  border: 0;
+  border-radius: var(--spacing--x-small);
+  text-align: center;
+  text-decoration: none;
+  word-break: break-word;
+  outline: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+.confirm [type=submit]:hover, .confirm [type=submit]:focus, .confirm [type=button]:hover, .confirm [type=button]:focus {
+  text-decoration: none;
+  transform: scale(96%);
+}
+.confirm [type=submit], .confirm [type=submit]:active {
+  background-color: var(--color--primary);
+  color: var(--color--lightest);
+}
+.confirm [type=submit]:hover, .confirm [type=submit]:focus {
+  background-color: var(--color--primary--active);
+  color: var(--color--darkest);
+}
+.confirm [type=submit]:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.confirm [type=button], .confirm [type=button]:active {
+  background-color: var(--color--secondary);
+  color: var(--color--lightest);
+}
+.confirm [type=button]:hover, .confirm [type=button]:focus {
+  background-color: var(--color--secondary--active);
+  color: var(--color--darkest);
+}
+
+.thanks {
+  text-align: center;
+}
+
 /**
  * Utility - Scroll Offset
  */

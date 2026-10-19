@@ -3,3 +3,9 @@
 
 # Node_modules
 node_modules/
+
+# Composer
+inc/vendor/
+
+# 環境変数
+inc/.env
