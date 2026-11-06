@@ -15,13 +15,14 @@ require_once __DIR__ . '/navigation.php';
  * $view:
  *   type, config: 投稿タイプの名前と設定
  *   posts: 投稿タイプの全記事
+ *   path: このページのパス (canonical に使う)
  *   post: ページの原稿
  *   content: 本文の HTML
  *   crumbs: パンくず
  */
 function renderPage(array $view): void {
   $post = $view['post'];
-  renderHeader(['title' => $post['title'] ?? '', 'description' => $post['summary'] ?? '']);
+  renderHeader(['title' => $post['title'] ?? '', 'description' => $post['summary'] ?? '', 'path' => $view['path'], 'image' => $post['img'] ?? '']);
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>

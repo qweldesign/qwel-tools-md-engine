@@ -42,6 +42,7 @@ function renderContact(string $step): void {
     'title'       => $stepTitle ?? $title,
     'description' => strip_tags(SITE_CONTACT['lead']),
     'noindex'     => $stepTitle !== null,
+    'path'        => SITE_CONTACT['path'] . ($stepTitle ? $step . '/' : ''),
   ]);
 
   $crumbs = [...SITE_BREADCRUMB, ['label' => $title, 'path' => SITE_CONTACT['formUrl'] ?: SITE_CONTACT['path']]];

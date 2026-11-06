@@ -17,11 +17,20 @@ require_once dirname(__DIR__) . '/inc/helpers.php';
  * $page:
  *   title: ページのタイトル (<title> は「title | サイト名」. 省略するとトップページの SITE_TITLE)
  *   description: description (既定で SITE_DESCRIPTION)
- *   noindex: 検索結果に出さない (404 など)
+ *   noindex: 検索結果に出さない (404 など). canonical は出さない
+ *   path: このページのサイトのルートからのパス (canonical, og:url に使う. 省略すると出さない)
+ *   image: OGP 画像 (既定で SITE_OGP_IMAGE. ファイルがなければ既定の画像にする)
+ *   imageAlt: OGP 画像の代替テキスト (既定で, 記事の画像ならページのタイトル, 既定の画像なら SITE_OGP_IMAGE_ALT)
+ *   type: og:type (既定で article)
+ *   head: </head> の直前に出力する HTML (構造化データなど. エスケープしない)
  */
 function renderHeader(array $page = []): void {
   $title = !empty($page['title']) ? $page['title'] . ' | ' . SITE_NAME : (SITE_TITLE ?: SITE_NAME);
   $description = ($page['description'] ?? '') ?: SITE_DESCRIPTION;
+  $url = isset($page['path']) ? absoluteUrl($page['path']) : null;
+  $image = ogImage($page['image'] ?? '');
+  $imageAlt = $page['imageAlt'] ?? ($image && !$image['isDefault'] ? ($page['title'] ?? $title) : (defined('SITE_OGP_IMAGE_ALT') ? SITE_OGP_IMAGE_ALT : ''));
+  $locale = defined('SITE_OG_LOCALE') ? SITE_OG_LOCALE : '';
 ?>
 <!DOCTYPE html>
 <html lang="<?= e(SITE_LANG) ?>">
@@ -39,7 +48,30 @@ function renderHeader(array $page = []): void {
     <meta name="description" content="<?= e($description) ?>">
 <?php if (!empty($page['noindex'])) { ?>
     <meta name="robots" content="noindex">
+<?php } elseif ($url) { ?>
+    <link rel="canonical" href="<?= e($url) ?>">
 <?php } ?>
+    <meta property="og:type" content="<?= e($page['type'] ?? 'article') ?>">
+    <meta property="og:site_name" content="<?= e(SITE_NAME) ?>">
+    <meta property="og:title" content="<?= e($title) ?>">
+    <meta property="og:description" content="<?= e($description) ?>">
+<?php if ($url) { ?>
+    <meta property="og:url" content="<?= e($url) ?>">
+<?php } ?>
+<?php if ($locale) { ?>
+    <meta property="og:locale" content="<?= e($locale) ?>">
+<?php } ?>
+<?php if ($image) { ?>
+    <meta property="og:image" content="<?= e($image['url']) ?>">
+<?php if ($image['width']) { ?>
+    <meta property="og:image:width" content="<?= $image['width'] ?>">
+    <meta property="og:image:height" content="<?= $image['height'] ?>">
+<?php } ?>
+<?php if ($imageAlt !== '') { ?>
+    <meta property="og:image:alt" content="<?= e($imageAlt) ?>">
+<?php } ?>
+<?php } ?>
+    <meta name="twitter:card" content="<?= $image ? 'summary_large_image' : 'summary' ?>">
 <?php if (SITE_FONTS_URL) { ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +96,7 @@ function renderHeader(array $page = []): void {
       gtag('config', '<?= e(SITE_GA_ID) ?>');
     </script>
 <?php } ?>
+<?= $page['head'] ?? '' ?>
   </head>
   <body>
     <header class="header">

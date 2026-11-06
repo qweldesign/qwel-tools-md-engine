@@ -27,6 +27,31 @@ function path(string $path = ''): string {
   return SITE_ROOT . preg_replace('#^\.?/#', '', $path);
 }
 
+// サイトのルートからのパスを, 絶対 URL にする (canonical, OGP 用)
+function absoluteUrl(string $path = ''): string {
+  return isExternal($path) ? $path : SITE_URL . path($path);
+}
+
+/**
+ * OGP 画像の情報
+ * 指定がないときと, 手元のファイルがないときは SITE_OGP_IMAGE を使う (共有したときのプレビューが空にならないように)
+ * 戻り値: ['url' => 絶対 URL, 'width' => 幅 または null, 'height' => 高さ または null, 'isDefault' => 既定の画像か]. 画像がなければ null
+ */
+function ogImage(string $image = ''): ?array {
+  $default = defined('SITE_OGP_IMAGE') ? SITE_OGP_IMAGE : '';
+  $isUsable = $image !== '' && (isExternal($image) || siteFileExists($image));
+  $path = $isUsable ? $image : $default;
+  if ($path === '') return null;
+
+  $size = !isExternal($path) && siteFileExists($path) ? @getimagesize(siteFile($path)) : false;
+  return [
+    'url'       => absoluteUrl($path),
+    'width'     => $size ? $size[0] : null,
+    'height'    => $size ? $size[1] : null,
+    'isDefault' => !$isUsable,
+  ];
+}
+
 // http から始まる URL か
 function isExternal(string $path): bool {
   return (bool)preg_match('#^https?://#', $path);

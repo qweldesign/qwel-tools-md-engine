@@ -4,11 +4,14 @@
  * サイトごとに変わる値は, ここにまとめる
  */
 
+// 日付の判定と表示のタイムゾーン
+date_default_timezone_set('Asia/Tokyo');
+
 // サイト名 (下層ページの title, ロゴの代わりの文字)
 const SITE_NAME = 'Simple CMS';
 // トップページの title (空なら SITE_NAME)
 const SITE_TITLE = 'Simple CMS | Markdown で作る軽量なサイト';
-// サイトの URL (末尾のスラッシュなし. お問い合わせフォームの送信元の確認に使う)
+// サイトの URL (末尾のスラッシュなし. canonical, OGP の絶対 URL と, お問い合わせフォームの送信元の確認に使う)
 const SITE_URL = 'https://qwel.design';
 // サイトのルートのパス (ドメイン直下なら /, サブディレクトリなら /tools/simple-cms/ のように)
 const SITE_ROOT = '/';
@@ -19,6 +22,11 @@ const SITE_DESCRIPTION = 'Markdown の原稿から、データベースなしで
 const SITE_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Sans:wght@100..900&family=Noto+Serif:wght@100..900&display=swap';
 // Google Analytics の測定 ID (不要なら空文字)
 const SITE_GA_ID = '';
+// OGP 画像の既定値 (サイトのルートからのパス. 不要なら空文字) と代替テキスト
+const SITE_OGP_IMAGE = '';
+const SITE_OGP_IMAGE_ALT = '';
+// og:locale (不要なら空文字)
+const SITE_OG_LOCALE = 'ja_JP';
 // 一覧の画像の既定値 (記事に img がない場合. 不要なら空文字)
 const SITE_THUMBNAIL_IMAGE = '';
 // URL の形式 (true: /blog/xxx/, false: /blog/?slug=xxx). .htaccess が効かない php -S では false になる

@@ -15,6 +15,7 @@ require_once __DIR__ . '/navigation.php';
  * $view:
  *   type, config: 投稿タイプの名前と設定
  *   posts: 投稿タイプの全記事 (最新記事などに使う)
+ *   path: このページのパス (canonical に使う)
  *   title: ページのタイトル
  *   pagination: ContentNavigation::paginate() の戻り値
  *   crumbs: パンくず
@@ -22,7 +23,7 @@ require_once __DIR__ . '/navigation.php';
 function renderPostList(array $view): void {
   $config = $view['config'];
   $posts = $view['pagination']['posts'];
-  renderHeader(['title' => $view['title'], 'description' => $config['lead']]);
+  renderHeader(['title' => $view['title'], 'description' => $config['lead'], 'path' => $view['path']]);
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>

@@ -13,7 +13,7 @@ $blog = postType('blog');
 $posts = (new ContentLoader())->load(siteFile($blog['dir']), null, $blog['sort']);
 $latest = ContentNavigation::latest($posts, 3);
 
-renderHeader();
+renderHeader(['path' => '', 'type' => 'website']);
 ?>
     <main class="main">
       <h1 class="main__title"><?= e(SITE_NAME) ?></h1>

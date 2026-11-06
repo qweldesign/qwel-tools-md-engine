@@ -15,6 +15,7 @@ require_once __DIR__ . '/navigation.php';
  * $view:
  *   type, config: 投稿タイプの名前と設定
  *   posts: 投稿タイプの全記事 (最新記事などに使う)
+ *   path: このページのパス (canonical に使う)
  *   post: 記事
  *   content: 本文の HTML
  *   adjacent: 前後の記事
@@ -23,7 +24,7 @@ require_once __DIR__ . '/navigation.php';
 function renderPostSingle(array $view): void {
   $post = $view['post'];
   $config = $view['config'];
-  renderHeader(['title' => $post['title'] ?? '', 'description' => $post['summary'] ?? '']);
+  renderHeader(['title' => $post['title'] ?? '', 'description' => $post['summary'] ?? '', 'path' => $view['path'], 'image' => $post['img'] ?? '']);
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>
