@@ -45,16 +45,17 @@ function postType(string $type): array {
     throw new InvalidArgumentException("投稿タイプ {$type} は config.php にありません");
   }
   return SITE_POST_TYPES[$type] + [
-    'label'    => $type,
-    'path'     => $type . '/',
-    'dir'      => 'content/' . $type,
-    'count'    => 10,
-    'showDate' => true,
-    'lead'     => '',
-    'empty'    => 'まだ記事はありません。',
-    'layout'   => 'post',
-    'items'    => true,
-    'sort'     => 'date',
+    'label'      => $type,
+    'path'       => $type . '/',
+    'dir'        => 'content/' . $type,
+    'count'      => 10,
+    'showDate'   => true,
+    'lead'       => '',
+    'empty'      => 'まだ記事はありません。',
+    'layout'     => 'post',
+    'items'      => true,
+    'sort'       => 'date',
+    'breadcrumb' => true,
   ];
 }
 

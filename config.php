@@ -59,6 +59,7 @@ const SITE_START_YEAR = 2019;
  * layout: post (記事. 前後の記事を出す) または page (固定ページ. 既定で post)
  * items: false で個別のページを作らず, 一覧から原稿の url へ直接リンクする (既定で true)
  * sort: date (日付の新しい順) または order (原稿の order の小さい順. 既定で date)
+ * breadcrumb: false でパンくずに投稿タイプの階層を出さない (一覧ページを持たないサイトなど. 既定で true)
  */
 const SITE_POST_TYPES = [
   'blog' => [

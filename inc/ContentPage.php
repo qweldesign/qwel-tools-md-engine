@@ -87,10 +87,10 @@ class ContentPage {
     ]);
   }
 
-  // パンくず. ルートに置く投稿タイプは, 投稿タイプの階層を出さない
+  // パンくず. ルートに置く投稿タイプと breadcrumb が false の投稿タイプは, 投稿タイプの階層を出さない
   private static function crumbs(array $config, array $current): array {
     $items = SITE_BREADCRUMB;
-    if ($config['path'] !== '') $items[] = ['label' => $config['label'], 'path' => $config['path']];
+    if ($config['path'] !== '' && $config['breadcrumb']) $items[] = ['label' => $config['label'], 'path' => $config['path']];
     foreach ($current as $label) $items[] = ['label' => $label];
     return ContentNavigation::breadcrumbs($items);
   }
