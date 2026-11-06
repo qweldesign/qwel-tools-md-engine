@@ -77,15 +77,15 @@ function renderHeader(array $page = []): void {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="<?= e(SITE_FONTS_URL) ?>">
 <?php } ?>
-    <link rel="stylesheet" href="<?= e(path('style.css')) ?>">
+    <link rel="stylesheet" href="<?= e(assetUrl('style.css')) ?>">
 <?php if (siteFileExists('assets/favicon.ico')) { ?>
-    <link rel="icon" href="<?= e(path('assets/favicon.ico')) ?>" sizes="32x32">
+    <link rel="icon" href="<?= e(assetUrl('assets/favicon.ico')) ?>" sizes="32x32">
 <?php } ?>
 <?php if (siteFileExists('assets/favicon.svg')) { ?>
-    <link rel="icon" href="<?= e(path('assets/favicon.svg')) ?>" type="image/svg+xml">
+    <link rel="icon" href="<?= e(assetUrl('assets/favicon.svg')) ?>" type="image/svg+xml">
 <?php } ?>
 <?php if (siteFileExists('assets/apple-touch-icon.png')) { ?>
-    <link rel="apple-touch-icon" href="<?= e(path('assets/apple-touch-icon.png')) ?>">
+    <link rel="apple-touch-icon" href="<?= e(assetUrl('assets/apple-touch-icon.png')) ?>">
 <?php } ?>
 <?php if (SITE_GA_ID) { ?>
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e(SITE_GA_ID) ?>"></script>
@@ -103,7 +103,7 @@ function renderHeader(array $page = []): void {
       <p class="header__logo">
         <a href="<?= e(SITE_LOGO_LINK ?: path()) ?>">
 <?php if (SITE_LOGO) { ?>
-          <img src="<?= e(path(SITE_LOGO)) ?>" alt="<?= e(SITE_NAME) ?>">
+          <img src="<?= e(assetUrl(SITE_LOGO)) ?>" alt="<?= e(SITE_NAME) ?>">
 <?php } else { ?>
           <?= e(SITE_NAME) ?>
 
@@ -141,7 +141,7 @@ function renderFooter(): void {
         <a class="footer__item" href="<?= e(path($sns['url'])) ?>"<?= isExternal($sns['url']) ? ' target="_blank" rel="noopener"' : '' ?>>
 <?php if (!empty($sns['icon'])) { ?>
           <svg class="icon is-md" width="36" height="36" aria-hidden="true">
-            <use href="<?= e(path('assets/icons.svg')) ?>#<?= e($sns['icon']) ?>"></use>
+            <use href="<?= e(assetUrl('assets/icons.svg')) ?>#<?= e($sns['icon']) ?>"></use>
           </svg>
 <?php } ?>
           <span><?= e($sns['label']) ?></span>
@@ -150,7 +150,7 @@ function renderFooter(): void {
         <small class="footer__copyright">&copy; <?= e(copyrightYears()) ?> <?= e(SITE_OWNER) ?></small>
       </div>
     </footer>
-    <script src="<?= e(path('init.js')) ?>" type="module"></script>
+    <script src="<?= e(assetUrl('init.js')) ?>" type="module"></script>
   </body>
 </html>
 <?php

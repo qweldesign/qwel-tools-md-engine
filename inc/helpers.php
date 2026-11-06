@@ -27,6 +27,15 @@ function path(string $path = ''): string {
   return SITE_ROOT . preg_replace('#^\.?/#', '', $path);
 }
 
+/**
+ * 静的ファイル (CSS, JS, ロゴなど) の URL. ファイルの更新時刻を ?v= に付ける
+ * ?v= の付いた URL は .htaccess で長くキャッシュする. ファイルを置き換えると URL が変わるので, すぐ反映される
+ */
+function assetUrl(string $path): string {
+  if (isExternal($path)) return $path;
+  return path($path) . (siteFileExists($path) ? '?v=' . filemtime(siteFile($path)) : '');
+}
+
 // サイトのルートからのパスを, 絶対 URL にする (canonical, OGP 用)
 function absoluteUrl(string $path = ''): string {
   return isExternal($path) ? $path : SITE_URL . path($path);

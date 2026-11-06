@@ -207,11 +207,12 @@ if (array_key_exists('http', $args)) {
     ]]);
     $body = @file_get_contents($base . $path, false, $context);
     $headers = function_exists('http_get_last_response_headers') ? (http_get_last_response_headers() ?? []) : ($http_response_header ?? []);
-    $result = ['status' => 0, 'type' => '', 'location' => '', 'body' => $body === false ? '' : $body];
+    $result = ['status' => 0, 'type' => '', 'location' => '', 'cache' => '', 'body' => $body === false ? '' : $body];
     foreach ($headers as $header) {
       if (preg_match('#^HTTP/\S+\s+(\d{3})#', $header, $match)) $result['status'] = (int)$match[1];
       if (preg_match('#^Content-Type:\s*(.+)$#i', $header, $match)) $result['type'] = trim($match[1]);
       if (preg_match('#^Location:\s*(.+)$#i', $header, $match)) $result['location'] = trim($match[1]);
+      if (preg_match('#^Cache-Control:\s*(.+)$#i', $header, $match)) $result['cache'] = trim($match[1]);
     }
     return $result;
   };
@@ -276,6 +277,19 @@ if (array_key_exists('http', $args)) {
   }
 
   if ($hasContact) $expect('api/send.php', 405, 'お問い合わせの送信は POST だけ');
+
+  // ブラウザのキャッシュ. 付かなくても表示は壊れない (mod_headers がないサーバーなど) ので, [WARN] にする
+  $expectCache = function (string $path, int $maxAge, string $note) use ($request): void {
+    $cache = $request($path)['cache'];
+    report(str_contains($cache, "max-age={$maxAge}") ? 'OK' : 'WARN', "/{$path} のキャッシュが {$maxAge} 秒 ({$note}) → " . ($cache ?: 'なし'));
+  };
+  $expectCache('style.css?v=1', 31536000, '?v= のある URL');
+  $expectCache('style.css', 86400, '?v= のない CSS');
+  if ($sampleImage !== '') $expectCache($sampleImage, 604800, '原稿の画像');
+
+  // HTML に長いキャッシュが付くと, 原稿を置き換えてもすぐ反映されない
+  $topCache = $request('')['cache'];
+  check(!preg_match('/max-age=[1-9]/', $topCache), 'トップに長いキャッシュがない → ' . ($topCache ?: 'なし'));
 }
 
 $summary = $failures ? "問題が {$failures} 件あります" : '問題はありません';
