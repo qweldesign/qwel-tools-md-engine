@@ -13,6 +13,8 @@ require_once __DIR__ . '/navigation.php';
 
 /**
  * $view:
+ *   type, config: 投稿タイプの名前と設定
+ *   posts: 投稿タイプの全記事
  *   post: ページの原稿
  *   content: 本文の HTML
  *   crumbs: パンくず

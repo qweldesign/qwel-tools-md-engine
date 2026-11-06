@@ -14,6 +14,7 @@ require_once __DIR__ . '/navigation.php';
 /**
  * $view:
  *   type, config: 投稿タイプの名前と設定
+ *   posts: 投稿タイプの全記事 (最新記事などに使う)
  *   title: ページのタイトル
  *   pagination: ContentNavigation::paginate() の戻り値
  *   crumbs: パンくず

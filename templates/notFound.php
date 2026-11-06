@@ -13,6 +13,7 @@ require_once __DIR__ . '/navigation.php';
 
 /**
  * $view:
+ *   posts: 投稿タイプの全記事 (最新記事などに使う)
  *   crumbs: パンくず
  *   backUrl, backLabel: 戻るリンク
  */

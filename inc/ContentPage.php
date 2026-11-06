@@ -39,7 +39,7 @@ class ContentPage {
     $number = is_string($_GET['page'] ?? null) ? (int)$_GET['page'] : 1;
     $pagination = ContentNavigation::paginate($posts, $number, $config['count']);
     if ($config['path'] === '' || $pagination['outOfRange']) {
-      self::renderMissing($type, $config);
+      self::renderMissing($type, $config, $posts);
       return;
     }
 
@@ -48,6 +48,7 @@ class ContentPage {
     renderPostList([
       'type'       => $type,
       'config'     => $config,
+      'posts'      => $posts,
       'title'      => $page > 1 ? "{$config['label']} ({$page}ページ目)" : $config['label'],
       'pagination' => $pagination,
       'crumbs'     => self::crumbs($config, $current),
@@ -59,13 +60,14 @@ class ContentPage {
     $slug = $_GET['slug'];
     $post = $config['items'] && is_string($slug) ? $loader->find($posts, $slug) : null;
     if ($post === null) {
-      self::renderMissing($type, $config);
+      self::renderMissing($type, $config, $posts);
       return;
     }
 
     $view = [
       'type'    => $type,
       'config'  => $config,
+      'posts'   => $posts,
       'post'    => $post,
       'content' => $loader->toHtml($post['content'], path()),
       'crumbs'  => self::crumbs($config, [$post['title'] ?? '']),
@@ -77,10 +79,11 @@ class ContentPage {
     }
   }
 
-  private static function renderMissing(string $type, array $config): void {
+  private static function renderMissing(string $type, array $config, array $posts): void {
     http_response_code(404);
     $isRoot = $config['path'] === '';
     renderNotFound([
+      'posts'     => $posts,
       'crumbs'    => self::crumbs($config, ['ページが見つかりません']),
       'backUrl'   => $isRoot ? path() : typeUrl($type),
       'backLabel' => $isRoot ? 'トップページへ' : "{$config['label']}の一覧へ",
