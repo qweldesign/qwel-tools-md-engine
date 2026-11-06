@@ -15,13 +15,14 @@
 ### 構成
 
 ```
-index.php                              トップページ (content/welcome.md を表示する)
+index.php                              記事の一覧と個別記事 (content/blog/*.md を読む)
 content/                               原稿 (Webからは読めない)
 contact/                               入力・確認・完了の画面
 api/send.php                           送信 (確認画面から JSONで POST される。Webに公開する)
 inc/                                   PHPの部品・設定 (Webからは読めない)
   env.php                              .env の読み込み
   ContentLoader.php                    原稿の読み込み
+  helpers.php                          テンプレートで使う関数
   composer.json                        Parsedown, PHPMailer (composer install で inc/vendor/ に入る)
   .env.example                         設定の見本 (.env としてコピーして使う)
 ```

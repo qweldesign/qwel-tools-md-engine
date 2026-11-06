@@ -1,5 +1,8 @@
 ---
 title: "ようこそ"
+slug: "welcome"
+date: "2026-11-06"
+summary: "原稿の書き方のサンプルです。"
 ---
 
 このページは、Markdown の原稿から作っています。

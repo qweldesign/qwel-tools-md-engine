@@ -6,3 +6,7 @@ inc/vendor/
 
 # 環境変数
 inc/.env
+
+# 原稿
+/content/*
+!/content/.htaccess

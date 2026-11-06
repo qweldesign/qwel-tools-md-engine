@@ -19,6 +19,29 @@
 
 class ContentLoader {
   /**
+   * ディレクトリの原稿をすべて読み, 日付の新しい順に並べる
+   * 日付は文字列で比べるので, 2026-10-09 または 2026-10 の形で書く (年月だけの日付は, 同じ月の中で後ろになる)
+   * frontmatter のないファイルは飛ばす
+   */
+  public function load(string $dir): array {
+    $posts = [];
+    foreach (glob(rtrim($dir, '/') . '/*.md') ?: [] as $file) {
+      $post = $this->read($file);
+      if ($post !== null) $posts[] = $post;
+    }
+    usort($posts, fn(array $a, array $b): int => strcmp($b['date'] ?? '', $a['date'] ?? ''));
+    return $posts;
+  }
+
+  // slug が一致する原稿を探す (見つからなければ null)
+  public function find(string $dir, string $slug): ?array {
+    foreach ($this->load($dir) as $post) {
+      if (($post['slug'] ?? null) === $slug) return $post;
+    }
+    return null;
+  }
+
+  /**
    * 原稿を 1 本読む
    * 戻り値: frontmatter の項目と, 本文の Markdown (content) の配列
    * 読めないファイルと, frontmatter のないファイルは null
