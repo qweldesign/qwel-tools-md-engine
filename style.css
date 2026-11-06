@@ -196,6 +196,15 @@ button, input, select, textarea {
 .header__logo {
   width: 7.2rem;
 }
+.header__nav ul {
+  padding-inline-start: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing--x-small) var(--spacing--medium);
+  margin: 0;
+  font-size: var(--font-size--small);
+}
 
 /**
  * Component - Breadcrumb
@@ -308,6 +317,19 @@ button, input, select, textarea {
 }
 .footer__item .icon {
   margin-inline-end: var(--spacing--x-small);
+}
+.footer__nav ul {
+  padding-inline-start: 0;
+  list-style: none;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--small-font-size);
+  line-height: var(--small-line-height);
+  letter-spacing: var(--small-letter-spacing);
+  gap: var(--spacing--x-small) var(--spacing--medium);
+  margin: 0 auto var(--spacing--medium);
 }
 .footer small {
   font-size: 0.875rem;

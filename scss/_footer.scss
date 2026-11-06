@@ -25,6 +25,15 @@
     }
   }
 
+  // サイト内のリンク (config.php の SITE_FOOTER_LINKS)
+  &__nav ul {
+    @include list-unstyled();
+    @include row(center);
+    @include small-text();
+    gap: space("x-small") space("medium");
+    margin: 0 auto space("medium");
+  }
+
   small {
     font-size: 0.875rem;
     line-height: 1.8;

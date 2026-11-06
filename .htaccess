@@ -1,0 +1,6 @@
+# サイト全体の設定 (Apache)
+
+# 設定ファイルは直接公開しない
+<Files "config.php">
+  Require all denied
+</Files>

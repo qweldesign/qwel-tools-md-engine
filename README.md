@@ -8,13 +8,14 @@
 
 1. `inc/` で `composer install` を実行し、Parsedown と PHPMailer を導入する
 2. `inc/.env.example` を `inc/.env` としてコピーし、サイト・SMTP・項目などの設定を書き換える
-3. `api/`, `contact/`, `content/`, `inc/` (`inc/vendor/` を含む) と `index.php` をサーバーにアップロードする。`inc/vendor/` がないとサイト全体を表示できない
+3. `api/`, `assets/`, `contact/`, `content/`, `inc/` (`inc/vendor/` を含む), `templates/`, `.htaccess`, `config.php`, `index.php`, `style.css` をサーバーにアップロードする。`inc/vendor/` がないとサイト全体を表示できない
 
 設定はすべて `inc/.env` に書く (各項目の説明は `inc/.env.example` を参照)。`.env` には SMTPのパスワードが含まれるため Git には含めない。`inc/.htaccess` で `inc/` ごと Web から読めないようにしているが、可能であれば公開ディレクトリの外に置き、`api/send.php` の `$env_path` を書き換えるとより安全。
 
 ### 構成
 
 ```
+config.php                             サイトの設定 (Webからは読めない)
 index.php                              記事の一覧と個別記事 (content/blog/*.md を読む)
 content/                               原稿 (Webからは読めない)
 contact/                               入力・確認・完了の画面
@@ -25,6 +26,8 @@ inc/                                   PHPの部品・設定 (Webからは読め
   helpers.php                          テンプレートで使う関数
   composer.json                        Parsedown, PHPMailer (composer install で inc/vendor/ に入る)
   .env.example                         設定の見本 (.env としてコピーして使う)
+templates/                             サイトが持つテンプレート (Webからは読めない)
+  site.php                             共通のヘッダーとフッター
 ```
 
 設定に不備があると `send.php` は 500 を返し、内容をサーバーのエラーログに残す。

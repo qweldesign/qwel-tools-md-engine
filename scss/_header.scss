@@ -2,6 +2,8 @@
  * Layout - Header
  */
 
+@use "variables" as *;
+
 .header {
   width: min(100%, 768px);
   margin: 0 auto;
@@ -9,5 +11,15 @@
 
   &__logo {
     width: 7.2rem;
+  }
+
+  // ナビ (config.php の SITE_NAV)
+  &__nav ul {
+    @include list-unstyled();
+    display: flex;
+    flex-wrap: wrap;
+    gap: space("x-small") space("medium");
+    margin: 0;
+    font-size: font-size("small");
   }
 }
