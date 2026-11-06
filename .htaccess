@@ -16,6 +16,10 @@ ErrorDocument 404 /404.php
   RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
   RewriteRule ^(.*)$ - [E=BASE:%1]
 
+  # www なしの URL に揃える場合は, 次の 2 行を自分のドメインに書き換えて有効にする
+  # RewriteCond %{HTTP_HOST} ^www\.example\.com$ [NC]
+  # RewriteRule ^(.*)$ https://example.com/$1 [R=301,L]
+
   # サイトマップは sitemap.php が原稿から作る
   RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
