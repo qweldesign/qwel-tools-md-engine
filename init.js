@@ -19,5 +19,5 @@ class AutoCopyright {
   }
 }
 
-new ContactForm();
+new ContactForm({ sendUrl: '../api/send.php' });
 new AutoCopyright(2019, 'QWEL.DESIGN');
