@@ -92,13 +92,27 @@ class ContentLoader {
    *           (原稿には /content/images/a.jpg と書く. サブディレクトリに置いたサイトでも画像が表示される)
    */
   public function toHtml(string $markdown, string $rootUrl = '/'): string {
-    $html = (new Parsedown())->text($markdown);
+    $html = $this->addImageAttrs((new Parsedown())->text($markdown));
     // タグの中だけを置き換える (コードの例など, 本文の文字は変えない)
     return preg_replace_callback('/<[a-z][^>]*>/i', fn(array $tag): string => str_replace(
       ['src="/content/', 'href="/content/'],
       ['src="' . $rootUrl . 'content/', 'href="' . $rootUrl . 'content/'],
       $tag[0]
     ), $html);
+  }
+
+  /**
+   * 本文の画像に大きさと読み込み方の属性を足す. 1 枚目は LCP の候補になりやすいので, すぐ読み, 2 枚目以降は遅延する
+   * 原稿の HTML に width か loading を書いた画像は, 書いた人の指定を尊重して触らない
+   */
+  private function addImageAttrs(string $html): string {
+    $index = 0;
+    // 引用符の中の「>」(alt="a > b" など) ではタグを閉じない
+    return preg_replace_callback('#<img\b((?:[^>"\']|"[^"]*"|\'[^\']*\')*?)(\s*/?)>#i', function (array $match) use (&$index): string {
+      $loading = $index++ === 0 ? 'eager' : 'lazy';
+      if (preg_match('/\s(?:width|loading)=/i', $match[1]) || !preg_match('/\ssrc="([^"?#]+)/i', $match[1], $src)) return $match[0];
+      return '<img' . $match[1] . imageAttrs(rawurldecode($src[1]), $loading) . $match[2] . '>';
+    }, $html) ?? $html;
   }
 
   // 値の前後の引用符を外す (`"a"` は a, `"a` はそのまま)

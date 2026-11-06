@@ -36,6 +36,22 @@ function assetUrl(string $path): string {
   return path($path) . (siteFileExists($path) ? '?v=' . filemtime(siteFile($path)) : '');
 }
 
+/**
+ * img 要素に足す属性 (大きさと読み込み方. 先頭に空白が付く)
+ * 大きさを伝えると, 画像を読み込む前に場所を取れるので, レイアウトがずれない. http から始まる URL と読めない画像には付けない
+ * $loading: lazy 遅延 (既定), eager すぐ読む, high すぐ読み, 優先度も上げる (ファーストビューの大きな画像に使う)
+ * 例: <img src="<?= e(path('assets/hero.jpg')) ?>" alt=""<?= imageAttrs('assets/hero.jpg', 'high') ?>>
+ */
+function imageAttrs(string $path, string $loading = 'lazy'): string {
+  $size = !isExternal($path) && siteFileExists($path) ? @getimagesize(siteFile($path)) : false;
+  $attrs = $size && $size[0] > 0 && $size[1] > 0 ? " width=\"{$size[0]}\" height=\"{$size[1]}\"" : '';
+  return $attrs . match ($loading) {
+    'high'  => ' loading="eager" fetchpriority="high"',
+    'eager' => ' loading="eager" decoding="async"',
+    default => ' loading="lazy" decoding="async"',
+  };
+}
+
 // サイトのルートからのパスを, 絶対 URL にする (canonical, OGP 用)
 function absoluteUrl(string $path = ''): string {
   return isExternal($path) ? $path : SITE_URL . path($path);

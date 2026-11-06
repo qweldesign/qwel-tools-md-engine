@@ -48,13 +48,13 @@ function renderPostItems(array $posts, string $type): void {
   $showDate = postType($type)['showDate'];
 ?>
       <ul class="postList is-list">
-<?php foreach ($posts as $post) { ?>
+<?php foreach (array_values($posts) as $index => $post) { ?>
 <?php $url = postUrl($type, $post); ?>
 <?php $image = ($post['img'] ?? '') ?: SITE_THUMBNAIL_IMAGE; ?>
         <li class="postList__item postItem">
 <?php if ($image) { ?>
           <figure class="postItem__image">
-            <img src="<?= e(path($image)) ?>" alt="" loading="lazy">
+            <img src="<?= e(path($image)) ?>" alt=""<?= imageAttrs($image, $index === 0 ? 'high' : 'lazy') ?>>
           </figure>
 <?php } ?>
           <div class="postItem__content">
