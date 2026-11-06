@@ -75,7 +75,9 @@ function renderHeader(array $page = []): void {
 <?php if (SITE_FONTS_URL) { ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="<?= e(SITE_FONTS_URL) ?>">
+    <!-- フォントの CSS は, 日本語では数百 KB になることがあるので, 表示を止めずに読む (読み終わるまでは代わりのフォントで表示する) -->
+    <link rel="preload" as="style" href="<?= e(SITE_FONTS_URL) ?>" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= e(SITE_FONTS_URL) ?>"></noscript>
 <?php } ?>
     <link rel="stylesheet" href="<?= e(assetUrl('style.css')) ?>">
 <?php if (siteFileExists('assets/favicon.ico')) { ?>

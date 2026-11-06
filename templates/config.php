@@ -18,7 +18,7 @@ const SITE_ROOT = '/';
 const SITE_LANG = 'ja';
 // description の既定値
 const SITE_DESCRIPTION = 'Markdown の原稿から、データベースなしでサイトを作るエンジンです。';
-// Google Fonts などの CSS の URL (不要なら空文字)
+// Google Fonts などの CSS の URL (不要なら空文字. display=swap を付ける. 書体と太さを絞ると転送量が減る)
 const SITE_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Sans:wght@100..900&family=Noto+Serif:wght@100..900&display=swap';
 // Google Analytics の測定 ID (不要なら空文字)
 const SITE_GA_ID = '';

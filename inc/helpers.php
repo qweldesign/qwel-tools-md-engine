@@ -52,6 +52,15 @@ function imageAttrs(string $path, string $loading = 'lazy'): string {
   };
 }
 
+/**
+ * LCP の候補の画像を先に読む link 要素 (renderHeader() の head に渡す. CSS の背景画像など, 発見が遅れる画像に使う)
+ * href は path() の URL. 実際に表示する画像と同じ URL にする (違うと 2 度読む) ので, assetUrl() の ?v= が付く画像には使わない
+ * 例: 'head' => preloadImage('assets/hero.jpg')
+ */
+function preloadImage(string $path): string {
+  return '    <link rel="preload" as="image" href="' . e(path($path)) . '" fetchpriority="high">' . "\n";
+}
+
 // サイトのルートからのパスを, 絶対 URL にする (canonical, OGP 用)
 function absoluteUrl(string $path = ''): string {
   return isExternal($path) ? $path : SITE_URL . path($path);
