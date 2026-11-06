@@ -19,10 +19,11 @@ require_once __DIR__ . '/navigation.php';
  *   post: ページの原稿
  *   content: 本文の HTML
  *   crumbs: パンくず
+ *   head: 構造化データ (renderHeader() の head に渡す)
  */
 function renderPage(array $view): void {
   $post = $view['post'];
-  renderHeader(['title' => $post['title'] ?? '', 'description' => $post['summary'] ?? '', 'path' => $view['path'], 'image' => $post['img'] ?? '']);
+  renderHeader(['title' => $post['title'] ?? '', 'description' => $post['summary'] ?? '', 'path' => $view['path'], 'image' => $post['img'] ?? '', 'head' => $view['head']]);
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>

@@ -44,7 +44,7 @@ class ContentPage {
     }
 
     $page = $pagination['page'];
-    $current = $page > 1 ? ["{$page}ページ目"] : [];
+    $crumbs = self::crumbs($config, $page > 1 ? ["{$page}ページ目"] : []);
     renderPostList([
       'type'       => $type,
       'config'     => $config,
@@ -52,7 +52,8 @@ class ContentPage {
       'path'       => pagePath($type, $page),
       'title'      => $page > 1 ? "{$config['label']} ({$page}ページ目)" : $config['label'],
       'pagination' => $pagination,
-      'crumbs'     => self::crumbs($config, $current),
+      'crumbs'     => $crumbs,
+      'head'       => breadcrumbJsonLd($crumbs),
     ]);
   }
 
@@ -65,6 +66,7 @@ class ContentPage {
       return;
     }
 
+    $crumbs = self::crumbs($config, [$post['title'] ?? '']);
     $view = [
       'type'    => $type,
       'config'  => $config,
@@ -72,7 +74,8 @@ class ContentPage {
       'path'    => postPath($type, $post),
       'post'    => $post,
       'content' => $loader->toHtml($post['content'], path()),
-      'crumbs'  => self::crumbs($config, [$post['title'] ?? '']),
+      'crumbs'  => $crumbs,
+      'head'    => postJsonLd($type, $post) . breadcrumbJsonLd($crumbs),
     ];
     if ($config['layout'] === 'page') {
       renderPage($view);

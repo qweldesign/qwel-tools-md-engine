@@ -19,11 +19,12 @@ require_once __DIR__ . '/navigation.php';
  *   title: ページのタイトル
  *   pagination: ContentNavigation::paginate() の戻り値
  *   crumbs: パンくず
+ *   head: 構造化データ (renderHeader() の head に渡す)
  */
 function renderPostList(array $view): void {
   $config = $view['config'];
   $posts = $view['pagination']['posts'];
-  renderHeader(['title' => $view['title'], 'description' => $config['lead'], 'path' => $view['path']]);
+  renderHeader(['title' => $view['title'], 'description' => $config['lead'], 'path' => $view['path'], 'head' => $view['head']]);
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>

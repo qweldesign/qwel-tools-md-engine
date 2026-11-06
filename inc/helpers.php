@@ -85,6 +85,7 @@ function postType(string $type): array {
     'sort'       => 'date',
     'breadcrumb' => true,
     'list'       => true,
+    'schema'     => 'BlogPosting',
   ];
 }
 
@@ -147,4 +148,55 @@ function dateTag(?string $date): string {
 function copyrightYears(): string {
   $current = (int)date('Y');
   return SITE_START_YEAR < $current ? SITE_START_YEAR . ' - ' . $current : (string)$current;
+}
+
+/**
+ * 構造化データ (JSON-LD) の script 要素 (renderHeader() の head に渡す)
+ * JSON_HEX_TAG: 値に </script> が含まれていても, script 要素が途中で閉じないようにする
+ */
+function jsonLd(array $data): string {
+  $json = json_encode(['@context' => 'https://schema.org'] + $data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
+  return $json === false ? '' : '    <script type="application/ld+json">' . $json . "</script>\n";
+}
+
+// パンくずの構造化データ (階層が 2 つ未満なら空文字. 現在地には item を付けない)
+function breadcrumbJsonLd(array $crumbs): string {
+  if (count($crumbs) < 2) return '';
+
+  $items = [];
+  foreach (array_values($crumbs) as $index => $crumb) {
+    $item = ['@type' => 'ListItem', 'position' => $index + 1, 'name' => $crumb['label']];
+    if ($crumb['path'] !== null) $item['item'] = absoluteUrl($crumb['path']);
+    $items[] = $item;
+  }
+  return jsonLd(['@type' => 'BreadcrumbList', 'itemListElement' => $items]);
+}
+
+/**
+ * 記事の公開日時 (時刻とタイムゾーン付き. 原稿に時刻はないので 00:00:00)
+ * 年月だけの日付と, 実在しない日付は空文字 (本当の日付ではない値を伝えないため)
+ */
+function publishedAt(string $date): string {
+  if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', trim($date), $parts)) return '';
+  if (!checkdate((int)$parts[2], (int)$parts[3], (int)$parts[1])) return '';
+  return (new DateTimeImmutable(sprintf('%04d-%02d-%02d', $parts[1], $parts[2], $parts[3])))->format('c');
+}
+
+// 記事の構造化データ (@type は投稿タイプの schema. null なら空文字)
+function postJsonLd(string $type, array $post): string {
+  $config = postType($type);
+  if ($config['schema'] === null) return '';
+
+  $data = [
+    '@type'    => $config['schema'],
+    'headline' => $post['title'] ?? '',
+    'url'      => absoluteUrl(postPath($type, $post)),
+  ];
+  if (!empty($post['summary'])) $data['description'] = $post['summary'];
+  if (!empty($post['img'])) $data['image'] = absoluteUrl($post['img']);
+  // 画面に日付を出さない投稿タイプでは, 構造化データにも出さない
+  $published = $config['showDate'] ? publishedAt($post['date'] ?? '') : '';
+  if ($published !== '') $data['datePublished'] = $published;
+  if (defined('SITE_AUTHOR') && SITE_AUTHOR) $data['author'] = SITE_AUTHOR;
+  return jsonLd($data);
 }

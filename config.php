@@ -56,6 +56,8 @@ const SITE_PAGES = [
 ];
 // robots.txt でクロールを拒否するパス (サイトのルートからのパス. 例: 'private/'. 不要なら空の配列)
 const SITE_ROBOTS_DISALLOW = [];
+// 記事の著者 (構造化データの author. 不要なら空の配列. 例: ['@type' => 'Organization', 'name' => 'QWEL.DESIGN'])
+const SITE_AUTHOR = [];
 // 著作権表示 (開始年 - 今年 運営者)
 const SITE_OWNER = 'QWEL.DESIGN';
 const SITE_START_YEAR = 2019;
@@ -73,6 +75,7 @@ const SITE_START_YEAR = 2019;
  * layout: post (記事. 前後の記事を出す) または page (固定ページ. 既定で post)
  * items: false で個別のページを作らず, 一覧から原稿の url へ直接リンクする (既定で true)
  * sort: date (日付の新しい順) または order (原稿の order の小さい順. 既定で date)
+ * schema: 個別記事の構造化データの種類 (schema.org の @type. 既定で BlogPosting. null で出さない)
  * list: false で一覧をサイトマップに載せない (既定で true)
  * breadcrumb: false でパンくずに投稿タイプの階層を出さない (一覧ページを持たないサイトなど. 既定で true)
  */
@@ -81,10 +84,12 @@ const SITE_POST_TYPES = [
     'label' => 'Blog',
   ],
   'page' => [
-    'label'  => 'Pages',
-    'path'   => '',
-    'layout' => 'page',
-    'count'  => null,
+    'label'    => 'Pages',
+    'path'     => '',
+    'layout'   => 'page',
+    'count'    => null,
+    'showDate' => false,
+    'schema'   => 'WebPage',
   ],
 ];
 
