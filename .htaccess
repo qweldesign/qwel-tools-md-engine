@@ -1,13 +1,8 @@
 # サイト全体の設定 (Apache)
 
-# 設定ファイルは直接公開しない
-<Files "config.php">
-  Require all denied
-</Files>
-
-# 存在しない URL は 404.php で表示する
-# ※ パスはドメインからの絶対パス. config.php の SITE_ROOT に合わせて書き換える (例: /tools/simple-cms/404.php)
-ErrorDocument 404 /404.php
+# 存在しない URL は inc/404.php で表示する
+# ※ パスはドメインからの絶対パス. templates/config.php の SITE_ROOT に合わせて書き換える (例: /tools/simple-cms/inc/404.php)
+ErrorDocument 404 /inc/404.php
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -20,11 +15,11 @@ ErrorDocument 404 /404.php
   # RewriteCond %{HTTP_HOST} ^www\.example\.com$ [NC]
   # RewriteRule ^(.*)$ https://example.com/$1 [R=301,L]
 
-  # サイトマップは sitemap.php が原稿から作る
-  RewriteRule ^sitemap\.xml$ sitemap.php [L]
+  # サイトマップは inc/sitemap.php が原稿から作る
+  RewriteRule ^sitemap\.xml$ inc/sitemap.php [L]
 
-  # robots.txt は robots.php が config.php から作る
-  RewriteRule ^robots\.txt$ robots.php [L]
+  # robots.txt は inc/robots.php が templates/config.php から作る
+  RewriteRule ^robots\.txt$ inc/robots.php [L]
 
   # 固定ページの入口を直接開いた場合は, きれいな URL へ恒久的に転送する
   # (THE_REQUEST を見ることで, 下の内部の書き換えでは転送がループしない)

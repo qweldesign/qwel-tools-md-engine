@@ -5,8 +5,8 @@
  * 投稿タイプの存在しない記事と範囲外のページ番号は, ContentPage が自分で 404 を返す
  */
 
-require_once __DIR__ . '/inc/ContentNavigation.php';
-require_once __DIR__ . '/templates/notFound.php';
+require_once __DIR__ . '/ContentNavigation.php';
+require_once dirname(__DIR__) . '/templates/notFound.php';
 
 // 404.php を直接開いた場合も 404 を返す
 http_response_code(404);

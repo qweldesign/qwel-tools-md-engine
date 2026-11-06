@@ -1,12 +1,12 @@
 <?php
 /**
  * robots.txt (/robots.txt)
- * config.php の設定から作る. /robots.txt へのアクセスは, ルートの .htaccess でここに振り分ける
+ * templates/config.php の設定から作る. /robots.txt へのアクセスは, ルートの .htaccess でここに振り分ける
  * ※ robots.txt はドメインのルートでしか読まれないため, サブディレクトリに置いたサイトでは効かない
  */
 
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/inc/helpers.php';
+require_once dirname(__DIR__) . '/templates/config.php';
+require_once __DIR__ . '/helpers.php';
 
 $disallow = defined('SITE_ROBOTS_DISALLOW') ? SITE_ROBOTS_DISALLOW : [];
 

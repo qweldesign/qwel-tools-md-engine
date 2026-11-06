@@ -9,7 +9,7 @@
  * このファイルはサイトが持つもの. デザインに合わせて書き換えてよい
  */
 
-require_once dirname(__DIR__) . '/config.php';
+require_once __DIR__ . '/config.php';
 require_once dirname(__DIR__) . '/inc/helpers.php';
 
 /**

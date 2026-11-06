@@ -22,7 +22,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $root = dirname(__DIR__);
-require_once $root . '/config.php';
+require_once $root . '/templates/config.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/ContentLoader.php';
 require_once __DIR__ . '/env.php';
@@ -53,13 +53,13 @@ check(PHP_VERSION_ID >= 80000, 'PHP ' . PHP_VERSION . ' (8.0 以上)');
 check((bool)preg_match('#^https?://[^/]+$#', SITE_URL), 'SITE_URL が http から始まり, 末尾にスラッシュがない');
 check(str_starts_with(SITE_ROOT, '/') && str_ends_with(SITE_ROOT, '/'), 'SITE_ROOT がスラッシュで始まり, スラッシュで終わる');
 check(is_file(__DIR__ . '/vendor/autoload.php'), 'inc/vendor/ がある (inc/ で composer install. ないとサイト全体を表示できない)');
-foreach (['.htaccess', 'inc/.htaccess', 'templates/.htaccess', 'content/.htaccess', 'content/images/.htaccess', '404.php', 'sitemap.php', 'robots.php'] as $file) {
+foreach (['.htaccess', 'inc/.htaccess', 'templates/.htaccess', 'content/.htaccess', 'content/images/.htaccess', 'inc/404.php', 'inc/sitemap.php', 'inc/robots.php'] as $file) {
   check(is_file("{$root}/{$file}"), "{$file} がある");
 }
 if (is_file("{$root}/.htaccess")) {
   // ErrorDocument はドメインからの絶対パスなので, SITE_ROOT を変えたときに書き換え忘れやすい
   $errorDocument = preg_match('/^\s*ErrorDocument\s+404\s+(\S+)/m', (string)file_get_contents("{$root}/.htaccess"), $match) ? $match[1] : '';
-  check($errorDocument === SITE_ROOT . '404.php', '.htaccess の ErrorDocument が ' . SITE_ROOT . '404.php' . " ({$errorDocument})");
+  check($errorDocument === SITE_ROOT . 'inc/404.php', '.htaccess の ErrorDocument が ' . SITE_ROOT . 'inc/404.php' . " ({$errorDocument})");
 }
 foreach (['SITE_OGP_IMAGE', 'SITE_THUMBNAIL_IMAGE', 'SITE_LOGO'] as $name) {
   $image = defined($name) ? constant($name) : '';
@@ -207,7 +207,7 @@ if (array_key_exists('http', $args)) {
   };
 
   // 公開しないファイル
-  $expect('config.php', 403, '設定を公開しない');
+  $expect('templates/config.php', 403, '設定を公開しない');
   $expect('inc/helpers.php', 403, 'inc/ を公開しない');
   $expect('inc/.env', 403, '.env を公開しない');
   $expect('templates/site.php', 403, 'templates/ を公開しない');
@@ -221,12 +221,12 @@ if (array_key_exists('http', $args)) {
   $sitemap = $request('sitemap.xml');
   check(
     $sitemap['status'] === 200 && str_contains($sitemap['type'], 'xml'),
-    '/sitemap.xml が XML (sitemap.php へのリライト) → ' . ($sitemap['status'] ?: '応答なし') . ($sitemap['type'] ? " {$sitemap['type']}" : '')
+    '/sitemap.xml が XML (inc/sitemap.php へのリライト) → ' . ($sitemap['status'] ?: '応答なし') . ($sitemap['type'] ? " {$sitemap['type']}" : '')
   );
   $robots = $request('robots.txt');
   check(
     $robots['status'] === 200 && str_contains($robots['body'], 'Sitemap: '),
-    '/robots.txt に Sitemap の行がある (robots.php へのリライト) → ' . ($robots['status'] ?: '応答なし')
+    '/robots.txt に Sitemap の行がある (inc/robots.php へのリライト) → ' . ($robots['status'] ?: '応答なし')
   );
 
   // 記事の URL と転送

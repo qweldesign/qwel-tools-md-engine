@@ -6,7 +6,7 @@
  * See LICENSE file for details.
  *
  * テンプレートで使う関数
- * config.php を読み込んだあとに使う
+ * templates/config.php を読み込んだあとに使う
  */
 
 // エンジンの版 (リリースのときに更新する. サイトがどの版から作られたかを, 公開中のページのソースで確かめられるように出力する)
@@ -70,7 +70,7 @@ function siteFileExists(string $path): bool {
 // 投稿タイプの設定 (未指定の項目は既定値で補う)
 function postType(string $type): array {
   if (!isset(SITE_POST_TYPES[$type])) {
-    throw new InvalidArgumentException("投稿タイプ {$type} は config.php にありません");
+    throw new InvalidArgumentException("投稿タイプ {$type} は templates/config.php にありません");
   }
   return SITE_POST_TYPES[$type] + [
     'label'      => $type,

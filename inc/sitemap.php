@@ -1,13 +1,13 @@
 <?php
 /**
  * サイトマップ (/sitemap.xml)
- * config.php の投稿タイプと content/ の原稿から作るので, 記事を足しても書き換えは要らない
+ * templates/config.php の投稿タイプと content/ の原稿から作るので, 記事を足しても書き換えは要らない
  * /sitemap.xml へのアクセスは, ルートの .htaccess でここに振り分ける
  */
 
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/inc/helpers.php';
-require_once __DIR__ . '/inc/ContentLoader.php';
+require_once dirname(__DIR__) . '/templates/config.php';
+require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/ContentLoader.php';
 
 $today = date('Y-m-d');
 // 更新日にできる日付 (形が違う日付と, 未来の日付は除く. 未来の日付の記事は, これから開催する催しなど)

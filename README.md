@@ -18,7 +18,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 - 個別のページを持たない投稿タイプ (リンク集、作品集など)
 - ページ送り、パンくず、前後の記事、最新記事
 - `/blog/xxx/` 形式のURL
-- タイトル、説明文、ナビ、フッターを `config.php` から出力
+- タイトル、説明文、ナビ、フッターを `templates/config.php` から出力
 - お問い合わせフォーム (入力 → 確認 → 完了。管理者宛と自動返信のメールをSMTPで送信)
 
 ---
@@ -39,15 +39,15 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 
 | 場所 | 持ち主 | 役割 |
 | --- | --- | --- |
-| `inc/` | エンジン | 原稿の読み込み、データの用意、フォームの検証と送信 |
+| `inc/` | エンジン | 原稿の読み込み、データの用意、フォームの検証と送信、404、サイトマップ、robots.txt |
 | `templates/` | サイト | HTML。デザインに合わせて書き換える |
-| `config.php` | サイト | サイトごとの設定 |
+| `templates/config.php` | サイト | サイトごとの設定 |
 | `content/` | サイト | 原稿と画像 |
 
 - **読み込みと表示を分ける:** `ContentLoader` と `ContentNavigation` はデータだけを返し、HTMLは `templates/` に書く
 - **`ContentPage` が画面を選ぶ:** URLを受けて必要なデータを集め、投稿タイプの設定に応じてテンプレートを呼ぶ
 - **frontmatter の値はすべて文字列:** 1 行に 1 項目の `key: value` だけを読む
-- **秘密の値だけを `.env` に置く:** 宛先とSMTPの設定以外は `config.php` に書く
+- **秘密の値だけを `.env` に置く:** 宛先とSMTPの設定以外は `templates/config.php` に書く
 - **外部依存は最小限:** Markdown の変換に Parsedown、メール送信に PHPMailer を Composer で使う
 - **作らないもの:** 管理画面、データベース、ベーシック認証、CSSとJSのビルドの仕組み
 
@@ -66,7 +66,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 
 1. `inc/` で `composer install` を実行し、Parsedown と PHPMailer を導入する
 2. `inc/.env.example` を `inc/.env` としてコピーし、宛先とSMTPの設定を書き換える
-3. `config.php` を書き換える
+3. `templates/config.php` を書き換える
 4. `.htaccess` を含めて、サーバーにアップロードする
 
 `inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。サブディレクトリに置くときは、`.htaccess` の `ErrorDocument` のパスを `SITE_ROOT` に合わせる。robots.txt はドメインのルートでしか読まれないので、ドメインのルートの robots.txt に `Sitemap:` の行を書く。
@@ -89,28 +89,24 @@ php inc/check.php --http       あわせて公開中のサイトに問い合わ�
 php inc/check.php --http=URL   問い合わせ先のサイトのルートの URL を指定する
 ```
 
-`--http` では、`.htaccess` が効いているか (`config.php`, `inc/`, `templates/`, 原稿の拒否、きれいな URL、転送、404、`/sitemap.xml`, `/robots.txt`) を確かめる。`.htaccess` はアップロードし忘れても表示が崩れないので、アップロードのあとに実行する。
+`--http` では、`.htaccess` が効いているか (`inc/`, `templates/`, 原稿の拒否、きれいな URL、転送、404、`/sitemap.xml`, `/robots.txt`) を確かめる。`.htaccess` はアップロードし忘れても表示が崩れないので、アップロードのあとに実行する。
 
 ### 構成
 
 ```
-config.php        サイトの設定
 index.php         トップページ (サイトが自由に書き換える)
-404.php           存在しない URL のページ (.htaccess の ErrorDocument から呼ぶ)
-sitemap.php       サイトマップ (/sitemap.xml)
-robots.php        robots.txt (/robots.txt)
 blog/             投稿タイプ「blog」の入口 (index.php, .htaccess)
 page/             固定ページの入口 (index.php だけ)
 contact/          お問い合わせフォームの入口 (入力、confirm/、thanks/)
 api/send.php      お問い合わせフォームの送信
 content/          原稿
-inc/              エンジン
-templates/        サイトが持つテンプレート
+inc/              エンジン (404.php, sitemap.php, robots.php を含む)
+templates/        サイトが持つテンプレートと設定 (config.php)
 scss/, style.css  スタイル
 js/, init.js      JavaScript
 ```
 
-`config.php`, `content/` (`content/images/` の画像を除く), `inc/`, `templates/` はWebから読めない。
+`content/` (`content/images/` の画像を除く), `inc/` (`404.php`, `sitemap.php`, `robots.php` を除く), `templates/` はWebから読めない。
 
 ### 原稿
 
@@ -146,11 +142,11 @@ img: "/content/images/my-first-post/00.jpg"
 
 ### 投稿タイプを増やす
 
-1. `config.php` の `SITE_POST_TYPES` に追加する (例: `news`)
+1. `templates/config.php` の `SITE_POST_TYPES` に追加する (例: `news`)
 2. `blog/` を `news/` としてコピーし、`index.php` の `ContentPage::render('blog')` を `'news'` に変える
 3. `content/news/` に原稿を置く
 
-項目の説明は `config.php` のコメントを参照。
+項目の説明は `templates/config.php` のコメントを参照。
 
 ### 固定ページ
 
@@ -162,7 +158,7 @@ img: "/content/images/my-first-post/00.jpg"
 
 ### お問い合わせフォーム
 
-項目は `config.php` の `SITE_CONTACT_FIELDS` から、入力欄、確認画面、メール本文、サーバー側の検証をまとめて作る。
+項目は `templates/config.php` の `SITE_CONTACT_FIELDS` から、入力欄、確認画面、メール本文、サーバー側の検証をまとめて作る。
 
 - 項目の種類: `text`, `email`, `tel`, `url`, `textarea`, `select`, `radio`, `checkbox`, `date`
 - 最初の `email` の項目を、自動返信の宛先と管理者宛メールの返信先にする

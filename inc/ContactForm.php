@@ -6,7 +6,7 @@
  * See LICENSE file for details.
  *
  * お問い合わせフォームの項目の検証と, メールの送信
- * 項目は config.php の SITE_CONTACT_FIELDS, 宛先と SMTP の秘密の値は inc/.env から読む
+ * 項目は templates/config.php の SITE_CONTACT_FIELDS, 宛先と SMTP の秘密の値は inc/.env から読む
  */
 
 use PHPMailer\PHPMailer\PHPMailer;

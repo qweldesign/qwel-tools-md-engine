@@ -1,2 +1,7 @@
 # PHP の部品・Composer のライブラリ・設定ファイル (.env) は直接公開しない
 Require all denied
+
+# ただし, 次のページは .htaccess の ErrorDocument とリライトから呼ぶので許可する
+<FilesMatch "^(404|sitemap|robots)\.php$">
+  Require all granted
+</FilesMatch>
