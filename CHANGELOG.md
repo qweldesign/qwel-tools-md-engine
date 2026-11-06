@@ -52,3 +52,46 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - Composer
 
 [0.1.0]: https://github.com/qweldesign/simple-cms/releases/tag/v0.1.0
+
+---
+
+## [1.0.0] 公開の準備
+
+お客さまのサイトに使える状態にする。検索エンジンに正しく情報を伝え、公開の前に設置の抜けを確かめられるようにする。
+
+### 検索エンジン
+
+- canonical と OGP を出力する (`noindex` のページに canonical は出さない。2 ページ目以降の canonical はそのページ自身を指す)
+- OGP 画像の既定値 (`SITE_OGP_IMAGE`, `SITE_OGP_IMAGE_ALT`) と `og:locale` (`SITE_OG_LOCALE`)
+- `/sitemap.xml` を原稿から作る (投稿タイプの `list` で一覧を除き、`SITE_PAGES` でほかのページを足す)
+- `/robots.txt` を作る (`SITE_ROBOTS_DISALLOW`)
+- 構造化データ (JSON-LD): パンくずと個別記事。種類は投稿タイプの `schema`、著者は `SITE_AUTHOR`
+- 年月だけの日付の記事と、日付を出さない投稿タイプには `datePublished` を出さない
+
+### 404
+
+- 存在しないURLを、サイトのレイアウトの 404 で表示する (`ErrorDocument`, `noindex`)
+
+### 健全性チェック
+
+- `php inc/check.php` で、設定、必要なファイル、原稿、お問い合わせフォームの準備を確かめる
+- `--http` で、公開中のサイトの `.htaccess` の働きを確かめる (拒否、きれいなURL、転送、404, `/sitemap.xml`, `/robots.txt`)
+- 問題があれば `[NG]` と終了コード 1 を返す
+
+### 構成
+
+- `config.php` を `templates/config.php` に移す
+- `404.php`, `sitemap.php`, `robots.php` を `inc/` に移す (`inc/.htaccess` でこの 3 つだけ公開する)
+- `reset-labels.sh` を `.github/` に移す
+
+### サーバー
+
+- `www` の統一の見本を、ルートの `.htaccess` にコメントで書く
+- 日付の判定と表示のタイムゾーンを `templates/config.php` で設定する
+
+### 0.1.0 からの更新
+
+- `.htaccess` の `ErrorDocument` のパスを `inc/404.php` に書き換え、`.htaccess` もアップロードする
+- `config.php` の値を `templates/config.php` に移す
+
+[1.0.0]: https://github.com/qweldesign/simple-cms/releases/tag/v1.0.0

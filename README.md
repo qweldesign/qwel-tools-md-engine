@@ -69,7 +69,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 3. `templates/config.php` を書き換える
 4. `.htaccess` を含めて、サーバーにアップロードする
 
-`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。サブディレクトリに置くときは、`.htaccess` の `ErrorDocument` のパスを `SITE_ROOT` に合わせる。robots.txt はドメインのルートでしか読まれないので、ドメインのルートの robots.txt に `Sitemap:` の行を書く。
+`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。サブディレクトリに置くときは、`.htaccess` の `ErrorDocument` のパスを `SITE_ROOT` に合わせる。robots.txt はドメインのルートでしか読まれないので、ドメインのルートの robots.txt に `Sitemap:` の行を書く。構造化データの `author` は `SITE_AUTHOR` に書く (空のままだと出力されず、リッチリザルトテストで指摘される)。
 
 手元では、PHPの確認用サーバーで表示を確かめられる。
 
