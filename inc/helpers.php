@@ -151,6 +151,49 @@ function copyrightYears(): string {
 }
 
 /**
+ * JSON のファイルを配列で読む (読めないファイル, 壊れた JSON, 配列でない JSON は null)
+ * Windows で書いたファイルも同じように読めるように, BOM を除く
+ */
+function readJsonFile(string $file): ?array {
+  if (!is_file($file)) return null;
+  $data = json_decode(preg_replace('/^\xEF\xBB\xBF/', '', (string)file_get_contents($file)), true);
+  return is_array($data) ? $data : null;
+}
+
+/**
+ * content/ の JSON を読む (例: contentJson('prices') → content/prices.json, contentJson('shop/fares') → content/shop/fares.json)
+ * 読めないときは空の配列を返し, エラーログに残す (ページの表示は止めない)
+ * 同じ JSON は, 1 回のリクエストで 1 度だけ読む
+ * $name はテンプレートに書く値. URL のパラメータなど, 外から来た値を渡さない
+ */
+function contentJson(string $name): array {
+  static $cache = [];
+  if (isset($cache[$name])) return $cache[$name];
+
+  $data = readJsonFile(siteFile("content/{$name}.json"));
+  if ($data === null) error_log("content/{$name}.json を読めません");
+  return $cache[$name] = $data ?? [];
+}
+
+// content/options.json の値 (なければ null)
+function siteOption(string $key): mixed {
+  return contentJson('options')[$key] ?? null;
+}
+
+/**
+ * 文中の {名前} を siteOption() の値に置き換える (整数は 3 桁区切り. 例: '{minPrice}円から')
+ * 名前は英数字とアンダースコア. 値がないときと, 値が配列のときは {名前} のまま残す
+ * エスケープはしないので, HTML に出すときは必要に応じて e() を通す
+ */
+function fillOptions(string $text): string {
+  return preg_replace_callback('/\{(\w+)\}/', function (array $match): string {
+    $value = siteOption($match[1]);
+    if (!is_scalar($value)) return $match[0];
+    return is_int($value) ? number_format($value) : (string)$value;
+  }, $text);
+}
+
+/**
  * 構造化データ (JSON-LD) の script 要素 (renderHeader() の head に渡す)
  * JSON_HEX_TAG: 値に </script> が含まれていても, script 要素が途中で閉じないようにする
  */

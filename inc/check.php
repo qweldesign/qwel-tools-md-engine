@@ -152,6 +152,22 @@ foreach (array_keys(SITE_POST_TYPES) as $type) {
   if (!$problems) report('OK', "{$type}: 原稿 " . count($files) . ' 件');
 }
 
+// ---- データファイル (content/ の JSON があるサイトだけ) ----
+$jsonFiles = [];
+if (is_dir("{$root}/content")) {
+  foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator("{$root}/content", FilesystemIterator::SKIP_DOTS)) as $file) {
+    if (strtolower($file->getExtension()) === 'json') $jsonFiles[] = substr(str_replace('\\', '/', $file->getPathname()), strlen($root) + 1);
+  }
+}
+if ($jsonFiles) {
+  echo "データファイル\n";
+  sort($jsonFiles);
+  foreach ($jsonFiles as $file) {
+    // 壊れていても表示は止まらず, 値が空になるだけなので, 手元では気付きにくい
+    check(readJsonFile("{$root}/{$file}") !== null, "{$file} を読める");
+  }
+}
+
 // ---- お問い合わせフォーム (contact/ のページがあるサイトだけ) ----
 $hasContact = defined('SITE_CONTACT') && is_file($root . '/' . trim(SITE_CONTACT['path'], '/') . '/index.php');
 if ($hasContact) {
@@ -217,6 +233,7 @@ if (array_key_exists('http', $args)) {
     break;
   }
   if ($sampleImage !== '') $expect($sampleImage, 200, '原稿の画像を公開する');
+  if ($jsonFiles) $expect($jsonFiles[0], 403, 'データファイルを公開しない');
 
   // リライト
   $sitemap = $request('sitemap.xml');
