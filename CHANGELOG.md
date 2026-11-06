@@ -51,7 +51,7 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - Apache (mod_rewrite, `.htaccess` を有効にする `AllowOverride`)
 - Composer
 
-[0.1.0]: https://github.com/qweldesign/simple-cms/releases/tag/v0.1.0
+[0.1.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v0.1.0
 
 ---
 
@@ -94,4 +94,41 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - `.htaccess` の `ErrorDocument` のパスを `inc/404.php` に書き換え、`.htaccess` もアップロードする
 - `config.php` の値を `templates/config.php` に移す
 
-[1.0.0]: https://github.com/qweldesign/simple-cms/releases/tag/v1.0.0
+[1.0.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.0.0
+
+---
+
+## [1.1.0] 原稿の下書きとデータファイル
+
+原稿を書く人と設置する人の作業を楽にする。公開前の下書きを確かめられるようにし、記事ではない値をテンプレートの外で管理できるようにする。
+
+### 下書き
+
+- `draft: "true"` の原稿は、本番では読み込まない (一覧、個別記事、サイトマップに出ず、URL を直接開いても 404)
+- 確認用サーバー (`php -S`) のときだけ読み込み、タイトルに `[下書き]` を付け、個別のページに `noindex` を付ける
+- サイトマップには、確認用サーバーでも載せない
+- テンプレートの書き換えは要らない (`ContentLoader::load()` の既定で切り替える)
+
+### データファイル
+
+- `contentJson()` で `content/` の JSON を読む。読めないときは空の配列を返し、エラーログに残す。同じ JSON は 1 回のリクエストで 1 度だけ読む
+- `siteOption()` で `content/options.json` の値を読む
+- `fillOptions()` で文中の `{名前}` を値に置き換える (整数は 3 桁区切り)
+
+### 健全性チェック
+
+- `content/` の中の壊れた JSON を `[NG]` にする
+- `inc/vendor/` に Parsedown がないときを `[NG]` にする
+- `--http` で、データファイルが公開されていないことを確かめる
+
+### 文書
+
+- 原稿を別のリポジトリで管理する手順を README に書く
+- CHANGELOG のリンクを今のリポジトリ名に直す
+
+### 1.0.0 からの更新
+
+- `inc/` を置き換える。`templates/`, `.htaccess`, `content/` の書き換えは要らない
+- 原稿に `draft: "true"` と書いていると、公開されなくなる
+
+[1.1.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.1.0

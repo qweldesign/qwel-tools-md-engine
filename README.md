@@ -16,6 +16,8 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 - 設置の抜けを確かめる健全性チェック
 - canonical、OGP、構造化データ (JSON-LD) を出力
 - 個別のページを持たない投稿タイプ (リンク集、作品集など)
+- 公開前の下書きを確認用サーバーで表示
+- 料金などの値を JSON で管理するデータファイル
 - ページ送り、パンくず、前後の記事、最新記事
 - `/blog/xxx/` 形式のURL
 - タイトル、説明文、ナビ、フッターを `templates/config.php` から出力
@@ -84,12 +86,12 @@ php -S 127.0.0.1:8000
 設置に抜けがないかを、コマンドラインで確かめる。問題があれば `[NG]` を出し、終了コード 1 を返す。`[WARN]` は表示が壊れないものなので、終了コードに含めない。
 
 ```
-php inc/check.php              手元のファイル (設定, 原稿, お問い合わせフォームの準備)
+php inc/check.php              手元のファイル (設定, 原稿, データファイル, お問い合わせフォームの準備)
 php inc/check.php --http       あわせて公開中のサイトに問い合わせる
 php inc/check.php --http=URL   問い合わせ先のサイトのルートの URL を指定する
 ```
 
-`--http` では、`.htaccess` が効いているか (`inc/`, `templates/`, 原稿の拒否、きれいな URL、転送、404、`/sitemap.xml`, `/robots.txt`) を確かめる。`.htaccess` はアップロードし忘れても表示が崩れないので、アップロードのあとに実行する。
+`--http` では、`.htaccess` が効いているか (`inc/`, `templates/`, 原稿、データファイルの拒否、きれいな URL、転送、404、`/sitemap.xml`, `/robots.txt`) を確かめる。`.htaccess` はアップロードし忘れても表示が崩れないので、アップロードのあとに実行する。
 
 ### 構成
 
@@ -99,7 +101,7 @@ blog/             投稿タイプ「blog」の入口 (index.php, .htaccess)
 page/             固定ページの入口 (index.php だけ)
 contact/          お問い合わせフォームの入口 (入力、confirm/、thanks/)
 api/send.php      お問い合わせフォームの送信
-content/          原稿
+content/          原稿とデータファイル
 inc/              エンジン (404.php, sitemap.php, robots.php を含む)
 templates/        サイトが持つテンプレートと設定 (config.php)
 scss/, style.css  スタイル
@@ -137,8 +139,56 @@ img: "/content/images/my-first-post/00.jpg"
 | `img` | 一覧の画像 (任意。サイトのルートからのパス) |
 | `url` | リンク先 (`items: false` の投稿タイプ) |
 | `order` | 並び順 (`sort: order` の投稿タイプ) |
+| `draft` | `"true"` で下書きにする (任意) |
 
 原稿と画像はリポジトリには入れない (`.gitignore` で除外。サンプルの `content/blog/welcome.md` と、`.htaccess` だけを管理)。
+
+### 下書き
+
+原稿に `draft: "true"` と書くと、下書きになる。
+
+- 本番では読み込まない。一覧、最新記事、サイトマップに出ず、URLを直接開いても 404 になる
+- 確認用サーバー (`php -S`) でだけ、一覧、個別記事、最新記事に出る。タイトルに `[下書き]` が付き、個別のページには `noindex` が付く。サイトマップには出ない
+- XAMPP などの手元のサーバーは、本番と同じ扱いになる
+
+テンプレートの書き換えは要らない。テンプレートから `ContentLoader` で原稿を読む場合も同じように働く。
+
+### データファイル
+
+料金や数値など、記事ではない値は `content/` の JSON に書く。テンプレートを書き換えずに値を変えられる。
+
+```json
+{
+  "minPrice": 12000,
+  "replyDays": "3"
+}
+```
+
+`content/options.json` に書いた値は、テンプレートから次のように使う。
+
+```php
+<?= e((string)siteOption('replyDays')) ?>営業日以内
+<?= e(fillOptions('{minPrice}円から')) ?>
+```
+
+| 関数 | 内容 |
+| --- | --- |
+| `contentJson('prices')` | `content/prices.json` を配列で返す。`contentJson('shop/fares')` のように、下のディレクトリも読める |
+| `siteOption('minPrice')` | `content/options.json` の値を返す (なければ `null`) |
+| `fillOptions('{minPrice}円から')` | 文中の `{名前}` を `options.json` の値に置き換える (整数は 3 桁区切り。値がないときはそのまま残す。エスケープはしない) |
+
+読めない JSON は空の配列になり、ページの表示は止まらない。内容はサーバーのエラーログに残るので、健全性チェックで確かめる。JSON はWebから読めない。`contentJson()` の引数には、URLのパラメータなど、外から来た値を渡さない。
+
+### 原稿を別のリポジトリで管理する
+
+原稿の履歴を残したいときは、原稿だけのリポジトリを作る。サイトのリポジトリの `.gitignore` は原稿を除外しているので、設定の変更は要らない。
+
+1. 原稿のリポジトリを作る。リポジトリのルートが、サイトの `content/` の中身にあたる (`blog/`, `page/`, `images/` など)
+2. `.htaccess` は原稿のリポジトリに入れない。サイトのリポジトリのものを使う
+3. 手元で確かめるときは、原稿をサイトの `content/` にコピーする
+4. 公開するときは、原稿をサーバーの `content/` にアップロードする。サーバーにしかないファイルを消す同期は使わない (`content/.htaccess` と `content/images/.htaccess` が消えて、原稿が公開されてしまう)
+
+**書き換えるのは原稿のリポジトリのほうにする。** サイトの `content/` は Git の管理の外にあるので、`git status` に変更が出ず、消えても Git では戻せない。ブランチの切り替えや `git reset` で、同じ名前のファイルが上書きされたり消えたりすることもある。
 
 ### 投稿タイプを増やす
 
