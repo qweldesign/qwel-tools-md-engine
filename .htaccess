@@ -5,6 +5,10 @@
   Require all denied
 </Files>
 
+# 存在しない URL は 404.php で表示する
+# ※ パスはドメインからの絶対パス. config.php の SITE_ROOT に合わせて書き換える (例: /tools/simple-cms/404.php)
+ErrorDocument 404 /404.php
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 

@@ -66,7 +66,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 3. `config.php` を書き換える
 4. `.htaccess` を含めて、サーバーにアップロードする
 
-`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。
+`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。サブディレクトリに置くときは、`.htaccess` の `ErrorDocument` のパスを `SITE_ROOT` に合わせる。
 
 手元では、PHPの確認用サーバーで表示を確かめられる。
 
@@ -81,6 +81,7 @@ php -S 127.0.0.1:8000
 ```
 config.php        サイトの設定
 index.php         トップページ (サイトが自由に書き換える)
+404.php           存在しない URL のページ (.htaccess の ErrorDocument から呼ぶ)
 blog/             投稿タイプ「blog」の入口 (index.php, .htaccess)
 page/             固定ページの入口 (index.php だけ)
 contact/          お問い合わせフォームの入口 (入力、confirm/、thanks/)
