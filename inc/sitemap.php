@@ -21,7 +21,8 @@ $latestAll = '';
 
 foreach (array_keys(SITE_POST_TYPES) as $type) {
   $config = postType($type);
-  $posts = (new ContentLoader())->load(siteFile($config['dir']), null, $config['sort']);
+  // 下書きは確認用サーバーでも載せない
+  $posts = (new ContentLoader())->load(siteFile($config['dir']), null, $config['sort'], false);
   $lastmods = array_map($lastmodOf, $posts);
   $latest = $lastmods ? max($lastmods) : '';
   if ($latest > $latestAll) $latestAll = $latest;

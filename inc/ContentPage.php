@@ -75,7 +75,7 @@ class ContentPage {
       'post'    => $post,
       'content' => $loader->toHtml($post['content'], path()),
       'crumbs'  => $crumbs,
-      'head'    => postJsonLd($type, $post) . breadcrumbJsonLd($crumbs),
+      'head'    => (ContentLoader::isDraft($post) ? "    <meta name=\"robots\" content=\"noindex\">\n" : '') . postJsonLd($type, $post) . breadcrumbJsonLd($crumbs),
     ];
     if ($config['layout'] === 'page') {
       renderPage($view);

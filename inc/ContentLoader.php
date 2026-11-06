@@ -24,17 +24,29 @@ class ContentLoader {
    * $filter: 残す記事に true を返す関数 (例: 書いた人ごとの一覧)
    * $sort: date (日付の新しい順) または order (order の小さい順. order がない記事は後ろ)
    * 日付は文字列で比べるので, 2026-10-09 または 2026-10 の形で書く (年月だけの日付は, 同じ月の中で後ろになる)
+   * $includeDrafts: 下書きも読む. 既定で確認用サーバー (php -S) のときだけ読む (XAMPP などの手元のサーバーは本番と同じ扱い)
+   *                 読んだ下書きのタイトルには印を付ける. 独自のテンプレートにも, 書き換えなしで効くように, データの側で付ける
    */
-  public function load(string $dir, ?callable $filter = null, string $sort = 'date'): array {
+  public function load(string $dir, ?callable $filter = null, string $sort = 'date', bool $includeDrafts = PHP_SAPI === 'cli-server'): array {
     $posts = [];
     foreach (glob(rtrim($dir, '/') . '/*.md') ?: [] as $file) {
       $post = $this->read($file);
-      if ($post !== null && ($filter === null || $filter($post))) $posts[] = $post;
+      if ($post === null || ($filter !== null && !$filter($post))) continue;
+      if (self::isDraft($post)) {
+        if (!$includeDrafts) continue;
+        $post['title'] = '[下書き] ' . ($post['title'] ?? '');
+      }
+      $posts[] = $post;
     }
     usort($posts, $sort === 'order'
       ? fn(array $a, array $b): int => $this->orderOf($a) <=> $this->orderOf($b)
       : fn(array $a, array $b): int => strcmp($b['date'] ?? '', $a['date'] ?? ''));
     return $posts;
+  }
+
+  // 下書きか (原稿に draft: "true" と書く)
+  public static function isDraft(array $post): bool {
+    return ($post['draft'] ?? '') === 'true';
   }
 
   // 並び順の数値 (値はすべて文字列で読むので, 比べるときに数値にする)

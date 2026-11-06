@@ -144,7 +144,8 @@ foreach (array_keys(SITE_POST_TYPES) as $type) {
       }
     }
 
-    if (!isset($samples[$type]) && $config['items'] && !$missing && $slug !== '') {
+    // 下書きは本番で 404 になるので, 公開中のサイトの確認に使わない
+    if (!isset($samples[$type]) && $config['items'] && !$missing && $slug !== '' && !ContentLoader::isDraft($post)) {
       $samples[$type] = ['file' => $name, 'post' => $post];
     }
   }
