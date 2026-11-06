@@ -132,3 +132,43 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - 原稿に `draft: "true"` と書いていると、公開されなくなる
 
 [1.1.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.1.0
+
+---
+
+## [1.2.0] 表示の速さ
+
+再訪問の表示を速くし、最初の表示を止めるものを減らす。原稿を置き換えたらすぐ反映される動きは変えない。
+
+### ブラウザのキャッシュ
+
+- `.htaccess` で静的ファイルに `Cache-Control` を付ける (mod_headers)。`?v=` が付いた URL は 1 年、`?v=` のない画像とフォントは 7 日、`?v=` のない CSS と JS は 1 日。HTML には付けない
+- `assetUrl()` で URL にファイルの更新時刻を付ける。CSS, JS, ロゴ, favicon, アイコンに使う
+
+### 画像
+
+- `imageAttrs()` で、手元の画像に `width`, `height` と読み込み方の属性を付ける
+- 本文の画像に自動で付ける。1 枚目は `eager`、2 枚目以降は `lazy`。原稿の HTML に `width` か `loading` を書いた画像には触らない
+- 一覧の先頭のサムネイルに `fetchpriority="high"` を付ける
+- `preloadImage()` で、LCP の候補の画像を先に読める
+
+### Web フォント
+
+- `SITE_FONTS_URL` の CSS を、表示を止めずに読む。読み終わるまでは代わりのフォントで表示する (JavaScript が無効のときは今までどおり)
+
+### 健全性チェック
+
+- `--http` で、キャッシュの期間を確かめる。付かないときは `[WARN]`
+- `--http` で、トップに長いキャッシュが付いていないことを確かめる
+
+### 1.1.0 からの更新
+
+`inc/` を置き換える。本文の画像の属性は、これだけで効く。ほかは任意で、次の順に取り入れる。
+
+- `.htaccess` にキャッシュの設定を足す。`expr=` は Apache 2.4.10 以上が必要で、古いサーバーでは 500 になるので、上げたあとトップを開いて確かめる
+- `templates/site.php` の CSS, JS, ロゴ, favicon, アイコンの `path()` を `assetUrl()` に変える
+- `templates/site.php` のフォントの読み方を変える
+- `templates/postList.php` の先頭のサムネイルに `imageAttrs()` を使う
+
+キャッシュの設定を入れると、原稿の画像を同じ名前で置き換えたときに、再訪問の人には最大 7 日古いままになる。すぐ反映したいときは、ファイル名を変える。
+
+[1.2.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.2.0
