@@ -52,7 +52,13 @@ echo "設定\n";
 check(PHP_VERSION_ID >= 80000, 'PHP ' . PHP_VERSION . ' (8.0 以上)');
 check((bool)preg_match('#^https?://[^/]+$#', SITE_URL), 'SITE_URL が http から始まり, 末尾にスラッシュがない');
 check(str_starts_with(SITE_ROOT, '/') && str_ends_with(SITE_ROOT, '/'), 'SITE_ROOT がスラッシュで始まり, スラッシュで終わる');
-check(is_file(__DIR__ . '/vendor/autoload.php'), 'inc/vendor/ がある (inc/ で composer install. ないとサイト全体を表示できない)');
+$hasVendor = is_file(__DIR__ . '/vendor/autoload.php');
+check($hasVendor, 'inc/vendor/ がある (inc/ で composer install. ないとサイト全体を表示できない)');
+// 古い inc/vendor/ が残っていると, autoload.php はあっても Parsedown がなく, 記事の表示で初めて止まる
+if ($hasVendor) {
+  require_once __DIR__ . '/vendor/autoload.php';
+  check(class_exists('Parsedown'), 'Parsedown がある (inc/ で composer install. ないと記事を表示できない)');
+}
 foreach (['.htaccess', 'inc/.htaccess', 'templates/.htaccess', 'content/.htaccess', 'content/images/.htaccess', 'inc/404.php', 'inc/sitemap.php', 'inc/robots.php'] as $file) {
   check(is_file("{$root}/{$file}"), "{$file} がある");
 }
