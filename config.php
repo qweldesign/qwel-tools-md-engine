@@ -27,6 +27,10 @@ const SITE_LOGO_LINK = '';
 const SITE_NAV = [];
 // フッターのリンク (形は SITE_NAV と同じ)
 const SITE_FOOTER_LINKS = [];
+// パンくずの先頭の階層 (path はサイトのルートからのパス, または http から始まる URL)
+const SITE_BREADCRUMB = [
+  ['label' => 'Top', 'path' => ''],
+];
 // フッターの SNS など (icon は assets/icons.svg の symbol の id. 不要なら空の配列)
 const SITE_SNS = [
   ['label' => 'GitHub', 'url' => 'https://github.com/qweldesign', 'icon' => 'si-github'],

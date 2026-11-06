@@ -23,11 +23,13 @@ api/send.php                           送信 (確認画面から JSONで POST �
 inc/                                   PHPの部品・設定 (Webからは読めない)
   env.php                              .env の読み込み
   ContentLoader.php                    原稿の読み込み
+  ContentNavigation.php                ページ送り, パンくず, 前後の記事, 最新記事のデータ
   helpers.php                          テンプレートで使う関数
   composer.json                        Parsedown, PHPMailer (composer install で inc/vendor/ に入る)
   .env.example                         設定の見本 (.env としてコピーして使う)
 templates/                             サイトが持つテンプレート (Webからは読めない)
   site.php                             共通のヘッダーとフッター
+  navigation.php                       パンくず, ページ送り, 前後の記事のHTML
 ```
 
 設定に不備があると `send.php` は 500 を返し、内容をサーバーのエラーログに残す。

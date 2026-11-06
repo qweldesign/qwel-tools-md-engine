@@ -22,20 +22,21 @@ class ContentLoader {
    * ディレクトリの原稿をすべて読み, 日付の新しい順に並べる
    * 日付は文字列で比べるので, 2026-10-09 または 2026-10 の形で書く (年月だけの日付は, 同じ月の中で後ろになる)
    * frontmatter のないファイルは飛ばす
+   * $filter: 残す記事に true を返す関数 (例: 書いた人ごとの一覧)
    */
-  public function load(string $dir): array {
+  public function load(string $dir, ?callable $filter = null): array {
     $posts = [];
     foreach (glob(rtrim($dir, '/') . '/*.md') ?: [] as $file) {
       $post = $this->read($file);
-      if ($post !== null) $posts[] = $post;
+      if ($post !== null && ($filter === null || $filter($post))) $posts[] = $post;
     }
     usort($posts, fn(array $a, array $b): int => strcmp($b['date'] ?? '', $a['date'] ?? ''));
     return $posts;
   }
 
-  // slug が一致する原稿を探す (見つからなければ null)
-  public function find(string $dir, string $slug): ?array {
-    foreach ($this->load($dir) as $post) {
+  // 読み込んだ記事から, slug が一致する記事を探す (見つからなければ null)
+  public function find(array $posts, string $slug): ?array {
+    foreach ($posts as $post) {
       if (($post['slug'] ?? null) === $slug) return $post;
     }
     return null;

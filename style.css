@@ -238,6 +238,102 @@ button, input, select, textarea {
 }
 
 /**
+ * Component - Pagination
+ */
+.pagination {
+  padding-inline-start: 0;
+  list-style: none;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing--small);
+  width: 100%;
+}
+.pagination__item > a {
+  display: block;
+  width: 2rem;
+  height: 3rem;
+  line-height: 3rem;
+  margin-inline: auto;
+}
+.pagination__item > a, .pagination__item > a:active {
+  border: 0;
+  border-radius: var(--spacing--x-small);
+  text-align: center;
+  text-decoration: none;
+  word-break: break-word;
+  outline: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  cursor: pointer;
+  transition: transform 0.5s ease, background-color 0.5s ease, background-position 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
+}
+.pagination__item > a:hover, .pagination__item > a:focus {
+  text-decoration: none;
+  transform: scale(96%);
+}
+.pagination__item > a, .pagination__item > a:active {
+  background-color: var(--color--primary);
+  color: var(--color--lightest);
+}
+.pagination__item > a:hover, .pagination__item > a:focus {
+  background-color: var(--color--primary--active);
+  color: var(--color--darkest);
+}
+.pagination__item > a:hover, .pagination__item > a:focus {
+  box-shadow: 0 0 var(--spacing--small) var(--color--primary);
+}
+.pagination__item > span {
+  display: block;
+  width: 2rem;
+  height: 3rem;
+  line-height: 3rem;
+  margin-inline: auto;
+  border-radius: var(--spacing--x-small);
+  background-color: var(--color--primary--active);
+  color: var(--color--darkest);
+  text-align: center;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+/**
+ * Project - Post Nav
+ * 個別記事の下の, 前後の記事へのリンク
+ */
+.postNav {
+  display: grid;
+  gap: var(--spacing--small);
+  margin-block: var(--spacing--large);
+}
+@media (min-width: 900px) {
+  .postNav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.postNav__link {
+  display: block;
+  padding: var(--spacing--small);
+  border: 1px solid var(--color--light);
+  border-radius: var(--spacing--x-small);
+  text-decoration: none;
+}
+.postNav__link.is-next {
+  grid-column: -2;
+  text-align: right;
+}
+.postNav__label {
+  display: block;
+  color: var(--color--dark);
+  font-size: var(--font-size--small);
+}
+.postNav__title {
+  display: block;
+}
+
+/**
  * Layout - Main
  */
 .main {
