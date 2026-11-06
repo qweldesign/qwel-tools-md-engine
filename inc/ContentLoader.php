@@ -74,9 +74,19 @@ class ContentLoader {
     return $meta;
   }
 
-  // Markdown を HTML にする. 本文は運営者が書くものなので, HTML はそのまま通す
-  public function toHtml(string $markdown): string {
-    return (new Parsedown())->text($markdown);
+  /**
+   * Markdown を HTML にする. 本文は運営者が書くものなので, HTML はそのまま通す
+   * $rootUrl: サイトのルートの URL. 「/content/」で始まる src, href の先頭をこれに置き換える
+   *           (原稿には /content/images/a.jpg と書く. サブディレクトリに置いたサイトでも画像が表示される)
+   */
+  public function toHtml(string $markdown, string $rootUrl = '/'): string {
+    $html = (new Parsedown())->text($markdown);
+    // タグの中だけを置き換える (コードの例など, 本文の文字は変えない)
+    return preg_replace_callback('/<[a-z][^>]*>/i', fn(array $tag): string => str_replace(
+      ['src="/content/', 'href="/content/'],
+      ['src="' . $rootUrl . 'content/', 'href="' . $rootUrl . 'content/'],
+      $tag[0]
+    ), $html);
   }
 
   // 値の前後の引用符を外す (`"a"` は a, `"a` はそのまま)

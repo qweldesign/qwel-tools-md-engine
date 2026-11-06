@@ -67,7 +67,7 @@ class ContentPage {
       'type'    => $type,
       'config'  => $config,
       'post'    => $post,
-      'content' => $loader->toHtml($post['content']),
+      'content' => $loader->toHtml($post['content'], path()),
       'crumbs'  => self::crumbs($config, [$post['title'] ?? '']),
     ];
     if ($config['layout'] === 'page') {

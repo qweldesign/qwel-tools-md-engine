@@ -10,3 +10,6 @@ inc/.env
 # 原稿
 /content/*
 !/content/.htaccess
+!/content/images/
+/content/images/*
+!/content/images/.htaccess
