@@ -19,19 +19,27 @@
 
 class ContentLoader {
   /**
-   * ディレクトリの原稿をすべて読み, 日付の新しい順に並べる
-   * 日付は文字列で比べるので, 2026-10-09 または 2026-10 の形で書く (年月だけの日付は, 同じ月の中で後ろになる)
+   * ディレクトリの原稿をすべて読み, 並べる
    * frontmatter のないファイルは飛ばす
    * $filter: 残す記事に true を返す関数 (例: 書いた人ごとの一覧)
+   * $sort: date (日付の新しい順) または order (order の小さい順. order がない記事は後ろ)
+   * 日付は文字列で比べるので, 2026-10-09 または 2026-10 の形で書く (年月だけの日付は, 同じ月の中で後ろになる)
    */
-  public function load(string $dir, ?callable $filter = null): array {
+  public function load(string $dir, ?callable $filter = null, string $sort = 'date'): array {
     $posts = [];
     foreach (glob(rtrim($dir, '/') . '/*.md') ?: [] as $file) {
       $post = $this->read($file);
       if ($post !== null && ($filter === null || $filter($post))) $posts[] = $post;
     }
-    usort($posts, fn(array $a, array $b): int => strcmp($b['date'] ?? '', $a['date'] ?? ''));
+    usort($posts, $sort === 'order'
+      ? fn(array $a, array $b): int => $this->orderOf($a) <=> $this->orderOf($b)
+      : fn(array $a, array $b): int => strcmp($b['date'] ?? '', $a['date'] ?? ''));
     return $posts;
+  }
+
+  // 並び順の数値 (値はすべて文字列で読むので, 比べるときに数値にする)
+  private function orderOf(array $post): int {
+    return isset($post['order']) ? (int)$post['order'] : PHP_INT_MAX;
   }
 
   // 読み込んだ記事から, slug が一致する記事を探す (見つからなければ null)

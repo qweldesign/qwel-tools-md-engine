@@ -29,9 +29,71 @@ function isExternal(string $path): bool {
   return (bool)preg_match('#^https?://#', $path);
 }
 
+// サイトのルートからのパスを, サーバー上のパスにする
+function siteFile(string $path): string {
+  return dirname(__DIR__) . '/' . trim($path, '/');
+}
+
 // サイトのルートからのパスにファイルがあるか (設置していない favicon などを出さないため)
 function siteFileExists(string $path): bool {
-  return is_file(dirname(__DIR__) . '/' . $path);
+  return is_file(siteFile($path));
+}
+
+// 投稿タイプの設定 (未指定の項目は既定値で補う)
+function postType(string $type): array {
+  if (!isset(SITE_POST_TYPES[$type])) {
+    throw new InvalidArgumentException("投稿タイプ {$type} は config.php にありません");
+  }
+  return SITE_POST_TYPES[$type] + [
+    'label'    => $type,
+    'path'     => $type . '/',
+    'dir'      => 'content/' . $type,
+    'count'    => 10,
+    'showDate' => true,
+    'lead'     => '',
+    'empty'    => 'まだ記事はありません。',
+    'layout'   => 'post',
+    'items'    => true,
+    'sort'     => 'date',
+  ];
+}
+
+// 投稿タイプの一覧のパス (サイトのルートからのパス)
+function typePath(string $type): string {
+  return postType($type)['path'];
+}
+
+/**
+ * 記事のパス (サイトのルートからのパス)
+ * 個別のページを持たない投稿タイプ (items: false) は, 原稿の url
+ * ルートに置く投稿タイプ (path: '') は, SITE_PRETTY_URLS が false のときだけ, 入口のディレクトリ (投稿タイプの名前) を通す
+ */
+function postPath(string $type, array $post): string {
+  $config = postType($type);
+  if (!$config['items']) return $post['url'] ?? '';
+  $slug = rawurlencode($post['slug'] ?? '');
+  if (SITE_PRETTY_URLS) return $config['path'] . $slug . '/';
+  return ($config['path'] === '' ? $type . '/' : $config['path']) . '?slug=' . $slug;
+}
+
+// 一覧のページのパス (サイトのルートからのパス)
+function pagePath(string $type, int $page): string {
+  $path = typePath($type);
+  if ($page === 1) return $path;
+  return $path . (SITE_PRETTY_URLS ? 'page/' . $page . '/' : '?page=' . $page);
+}
+
+// 上のパスを, リンクに使う URL にしたもの
+function typeUrl(string $type): string {
+  return path(typePath($type));
+}
+
+function postUrl(string $type, array $post): string {
+  return path(postPath($type, $post));
+}
+
+function pageUrl(string $type, int $page): string {
+  return path(pagePath($type, $page));
 }
 
 /**

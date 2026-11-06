@@ -38,7 +38,8 @@ class ContentNavigation {
 
   /**
    * 前後の記事を探す
-   * $posts は新しい順なので, 前の記事 (prev) は古い記事で後ろにあり, 次の記事 (next) は新しい記事で手前にある
+   * $posts は新しい順に並ぶので, 前の記事 (prev) は古い記事で後ろにあり, 次の記事 (next) は新しい記事で手前にある
+   * (order で並べた投稿タイプでは, 並びの後ろが prev, 手前が next)
    * 戻り値: ['prev' => 記事 または null, 'next' => 記事 または null]
    */
   public static function adjacent(array $posts, string $slug): array {

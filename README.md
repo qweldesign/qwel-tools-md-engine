@@ -8,7 +8,7 @@
 
 1. `inc/` で `composer install` を実行し、Parsedown と PHPMailer を導入する
 2. `inc/.env.example` を `inc/.env` としてコピーし、サイト・SMTP・項目などの設定を書き換える
-3. `api/`, `assets/`, `contact/`, `content/`, `inc/` (`inc/vendor/` を含む), `templates/`, `.htaccess`, `config.php`, `index.php`, `style.css` をサーバーにアップロードする。`inc/vendor/` がないとサイト全体を表示できない
+3. `api/`, `assets/`, `blog/`, `contact/`, `content/`, `page/`, `inc/` (`inc/vendor/` を含む), `templates/`, `.htaccess`, `config.php`, `index.php`, `style.css` をサーバーにアップロードする。`inc/vendor/` がないとサイト全体を表示できない
 
 設定はすべて `inc/.env` に書く (各項目の説明は `inc/.env.example` を参照)。`.env` には SMTPのパスワードが含まれるため Git には含めない。`inc/.htaccess` で `inc/` ごと Web から読めないようにしているが、可能であれば公開ディレクトリの外に置き、`api/send.php` の `$env_path` を書き換えるとより安全。
 
@@ -16,7 +16,9 @@
 
 ```
 config.php                             サイトの設定 (Webからは読めない)
-index.php                              記事の一覧と個別記事 (content/blog/*.md を読む)
+index.php                              トップページ (サイトが自由に書き換える)
+blog/                                  投稿タイプ「blog」の入口 (index.php, .htaccess)
+page/                                  固定ページの入口 (index.php だけ。/xxx/ で開く)
 content/                               原稿 (Webからは読めない)
 contact/                               入力・確認・完了の画面
 api/send.php                           送信 (確認画面から JSONで POST される。Webに公開する)
@@ -24,12 +26,14 @@ inc/                                   PHPの部品・設定 (Webからは読め
   env.php                              .env の読み込み
   ContentLoader.php                    原稿の読み込み
   ContentNavigation.php                ページ送り, パンくず, 前後の記事, 最新記事のデータ
+  ContentPage.php                      投稿タイプのURLを受けて, 画面のテンプレートを選ぶ
   helpers.php                          テンプレートで使う関数
   composer.json                        Parsedown, PHPMailer (composer install で inc/vendor/ に入る)
   .env.example                         設定の見本 (.env としてコピーして使う)
 templates/                             サイトが持つテンプレート (Webからは読めない)
   site.php                             共通のヘッダーとフッター
   navigation.php                       パンくず, ページ送り, 前後の記事のHTML
+  postList.php, postSingle.php, page.php, notFound.php  画面ごとのHTML
 ```
 
 設定に不備があると `send.php` は 500 を返し、内容をサーバーのエラーログに残す。
