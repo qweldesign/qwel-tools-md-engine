@@ -241,11 +241,12 @@ if (array_key_exists('http', $args)) {
     if ($prefix === '') $expectRedirect("{$entry}{$slug}/", "{$slug}/", '固定ページの入口から');
   }
 
-  // 404 (Apache の既定の画面ではなく, サイトのレイアウトの 404. noindex の有無で見分ける)
+  // 404 (Apache の既定の画面ではなく, このサイトの 404. noindex で 404 のページを, og:site_name で同じドメインの別のサイトと見分ける)
+  $siteNameTag = '<meta property="og:site_name" content="' . e(SITE_NAME) . '">';
   foreach (['simple-cms-check-not-found/' => '固定ページのリライト', 'simple-cms-check/not/found/' => 'ErrorDocument'] as $path => $note) {
     $notFound = $request($path);
     check(
-      $notFound['status'] === 404 && str_contains($notFound['body'], 'noindex'),
+      $notFound['status'] === 404 && str_contains($notFound['body'], 'noindex') && str_contains($notFound['body'], $siteNameTag),
       "存在しない URL がサイトの 404 のページ ({$note}) → " . ($notFound['status'] ?: '応答なし')
     );
   }
