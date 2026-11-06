@@ -12,6 +12,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 - データベース不要、原稿はファイルで管理
 - 複数の投稿タイプ (ブログ、お知らせなど) をディレクトリごとに管理
 - 固定ページを `/slug/` で表示
+- サイトマップを原稿から自動で作成
 - 個別のページを持たない投稿タイプ (リンク集、作品集など)
 - ページ送り、パンくず、前後の記事、最新記事
 - `/blog/xxx/` 形式のURL
@@ -82,6 +83,7 @@ php -S 127.0.0.1:8000
 config.php        サイトの設定
 index.php         トップページ (サイトが自由に書き換える)
 404.php           存在しない URL のページ (.htaccess の ErrorDocument から呼ぶ)
+sitemap.php       サイトマップ (/sitemap.xml)
 blog/             投稿タイプ「blog」の入口 (index.php, .htaccess)
 page/             固定ページの入口 (index.php だけ)
 contact/          お問い合わせフォームの入口 (入力、confirm/、thanks/)

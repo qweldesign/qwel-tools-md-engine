@@ -50,6 +50,10 @@ const SITE_SNS = [
   ['label' => 'GitHub', 'url' => 'https://github.com/qweldesign', 'icon' => 'si-github'],
   ['label' => 'Contact Me', 'url' => 'contact/', 'icon' => 'si-mail']
 ];
+// 投稿タイプ以外のページ (サイトのルートからのパス. サイトマップに載せる)
+const SITE_PAGES = [
+  'contact/',
+];
 // 著作権表示 (開始年 - 今年 運営者)
 const SITE_OWNER = 'QWEL.DESIGN';
 const SITE_START_YEAR = 2019;
@@ -67,6 +71,7 @@ const SITE_START_YEAR = 2019;
  * layout: post (記事. 前後の記事を出す) または page (固定ページ. 既定で post)
  * items: false で個別のページを作らず, 一覧から原稿の url へ直接リンクする (既定で true)
  * sort: date (日付の新しい順) または order (原稿の order の小さい順. 既定で date)
+ * list: false で一覧をサイトマップに載せない (既定で true)
  * breadcrumb: false でパンくずに投稿タイプの階層を出さない (一覧ページを持たないサイトなど. 既定で true)
  */
 const SITE_POST_TYPES = [

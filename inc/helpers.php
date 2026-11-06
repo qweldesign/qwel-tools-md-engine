@@ -84,6 +84,7 @@ function postType(string $type): array {
     'items'      => true,
     'sort'       => 'date',
     'breadcrumb' => true,
+    'list'       => true,
   ];
 }
 
