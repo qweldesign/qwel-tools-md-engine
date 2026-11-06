@@ -1,52 +1,164 @@
-## QWEL Contact Form
+# QWEL Markdown Engine (Simple CMS)
 
-軽量・シンプルなお問い合わせフォーム
+Markdown の原稿から、データベースなしでサイトを作るPHPのエンジン。
 
-▶ Sample DEMO: [https://qwel.design/tools/contact-form/]
+ブログや作品集、小さな事業のサイトなど、軽量なサイトを作るためのもの。
 
-## セットアップ
+---
+
+## 概要・機能 | Overview & Features
+
+- Markdown を HTMLに変換して表示
+- データベース不要、原稿はファイルで管理
+- 複数の投稿タイプ (ブログ、お知らせなど) をディレクトリごとに管理
+- 固定ページを `/slug/` で表示
+- 個別のページを持たない投稿タイプ (リンク集、作品集など)
+- ページ送り、パンくず、前後の記事、最新記事
+- `/blog/xxx/` 形式のURL
+- タイトル、説明文、ナビ、フッターを `config.php` から出力
+- お問い合わせフォーム (入力 → 確認 → 完了。管理者宛と自動返信のメールをSMTPで送信)
+
+---
+
+## 目的・背景 | Purpose & Background
+
+- 環境構築を手軽に行える、軽量なCMSが欲しかった
+- 管理画面の実装・運用・保守に伴うコストとセキュリティリスクを抑えたかった
+- お客さまから文章と画像を提供してもらい、更新はエンジニアが行う運用を前提にした
+- Markdown をそのまま運用し、Git で保守できる環境を作りたかった
+- 納品したサイトは、作ったときの版のまま動かし続けられるようにしたかった
+
+---
+
+## 設計・実装 | Design & Implementation
+
+**核は小さく保ち、テンプレートはサイトが持つものとして作る**。
+
+| 場所 | 持ち主 | 役割 |
+| --- | --- | --- |
+| `inc/` | エンジン | 原稿の読み込み、データの用意、フォームの検証と送信 |
+| `templates/` | サイト | HTML。デザインに合わせて書き換える |
+| `config.php` | サイト | サイトごとの設定 |
+| `content/` | サイト | 原稿と画像 |
+
+- **読み込みと表示を分ける:** `ContentLoader` と `ContentNavigation` はデータだけを返し、HTMLは `templates/` に書く
+- **`ContentPage` が画面を選ぶ:** URLを受けて必要なデータを集め、投稿タイプの設定に応じてテンプレートを呼ぶ
+- **frontmatter の値はすべて文字列:** 1 行に 1 項目の `key: value` だけを読む
+- **秘密の値だけを `.env` に置く:** 宛先とSMTPの設定以外は `config.php` に書く
+- **外部依存は最小限:** Markdown の変換に Parsedown、メール送信に PHPMailer を Composer で使う
+- **作らないもの:** 管理画面、データベース、ベーシック認証、CSSとJSのビルドの仕組み
+
+---
+
+## 使い方 | Usage
+
+### 動作環境
+
+- PHP 8.0 以上
+- Apache (mod_rewrite、`.htaccess` を有効にする `AllowOverride`)
+- Composer
+- Sass (`scss/` を書き換えるとき)
+
+### セットアップ
 
 1. `inc/` で `composer install` を実行し、Parsedown と PHPMailer を導入する
-2. `inc/.env.example` を `inc/.env` としてコピーし、宛先と SMTP の設定を書き換える。サイト名、URL、項目、自動返信の署名は `config.php` に書く
-3. `api/`, `assets/`, `blog/`, `contact/`, `content/`, `page/`, `inc/` (`inc/vendor/` を含む), `templates/`, `.htaccess`, `config.php`, `index.php`, `style.css` をサーバーにアップロードする。`inc/vendor/` がないとサイト全体を表示できない
+2. `inc/.env.example` を `inc/.env` としてコピーし、宛先とSMTPの設定を書き換える
+3. `config.php` を書き換える
+4. `.htaccess` を含めて、サーバーにアップロードする
 
-`.env` には SMTPのパスワードが含まれるため Git には含めない。`inc/.htaccess` で `inc/` ごと Web から読めないようにしているが、可能であれば公開ディレクトリの外に置き、`config.php` の `SITE_CONTACT` の `env` を書き換えるとより安全。
+`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。
+
+手元では、PHPの確認用サーバーで表示を確かめられる。
+
+```
+php -S 127.0.0.1:8000
+```
+
+確認用サーバーは `.htaccess` を読まないので、URLは `/blog/?slug=xxx` の形になる (`SITE_PRETTY_URLS` が自動で `false` になる)。お問い合わせフォームの送信を試すときは、`SITE_URL` を手元のURLに変える。
 
 ### 構成
 
 ```
-config.php                             サイトの設定 (Webからは読めない)
-index.php                              トップページ (サイトが自由に書き換える)
-blog/                                  投稿タイプ「blog」の入口 (index.php, .htaccess)
-page/                                  固定ページの入口 (index.php だけ。/xxx/ で開く)
-content/                               原稿 (Webからは読めない)
-contact/                               入力・確認・完了の画面の入口
-api/send.php                           送信 (確認画面から JSONで POST される。Webに公開する)
-inc/                                   PHPの部品・設定 (Webからは読めない)
-  env.php                              .env の読み込み
-  ContactForm.php                      フォームの検証とメール送信
-  ContentLoader.php                    原稿の読み込み
-  ContentNavigation.php                ページ送り, パンくず, 前後の記事, 最新記事のデータ
-  ContentPage.php                      投稿タイプのURLを受けて, 画面のテンプレートを選ぶ
-  helpers.php                          テンプレートで使う関数
-  composer.json                        Parsedown, PHPMailer (composer install で inc/vendor/ に入る)
-  .env.example                         設定の見本 (.env としてコピーして使う)
-templates/                             サイトが持つテンプレート (Webからは読めない)
-  site.php                             共通のヘッダーとフッター
-  navigation.php                       パンくず, ページ送り, 前後の記事のHTML
-  postList.php, postSingle.php, page.php, notFound.php  画面ごとのHTML
-  contact.php                          フォームの 3 画面のHTML
+config.php        サイトの設定
+index.php         トップページ (サイトが自由に書き換える)
+blog/             投稿タイプ「blog」の入口 (index.php, .htaccess)
+page/             固定ページの入口 (index.php だけ)
+contact/          お問い合わせフォームの入口 (入力、confirm/、thanks/)
+api/send.php      お問い合わせフォームの送信
+content/          原稿
+inc/              エンジン
+templates/        サイトが持つテンプレート
+scss/, style.css  スタイル
+js/, init.js      JavaScript
 ```
 
-設定に不備があると `send.php` は 500 を返し、内容をサーバーのエラーログに残す。
+`config.php`, `content/` (`content/images/` の画像を除く), `inc/`, `templates/` はWebから読めない。
 
-## 迷惑メール対策
+### 原稿
 
-- Origin / Referer のチェック: 送信元の `scheme://host[:port]` が `SITE_URL` と完全に一致しない送信は 403 で弾く
-- ハニーポット: 人には見えない入力欄 (`templates/contact.php` の `data-contact-honeypot`) に値があれば、送ったふりをして破棄する
-- 送信間隔の制限: 同じセッションから `SITE_CONTACT` の `interval` 秒以内に続けて送信すると 429 を返す (`0` で制限しない)
+原稿の冒頭に frontmatter を書く。
 
-入力の不備 (必須項目が空、メールアドレスの形式など) は 400 と、項目ごとのメッセージを JSON で返し、確認画面に表示する。
+```
+---
+title: "記事のタイトル"
+slug: "my-first-post"
+date: "2026-10-08"
+summary: "一覧と description に使う要約"
+img: "/content/images/my-first-post/00.jpg"
+---
+
+本文の Markdown
+
+![画像の説明](/content/images/my-first-post/01.jpg)
+```
+
+画像は `content/images/` に置き、`/content/images/...` の形で書く。サブディレクトリに置いたサイトでも、`/content/` で始まるパスは `SITE_ROOT` に合わせて置き換わる。それ以外の `/about/` のようなサイト内のリンクは置き換わらないので、サブディレクトリに置く場合はパスを合わせる。
+
+| 項目 | 内容 |
+| --- | --- |
+| `title` | タイトル |
+| `slug` | URLに使う英数字、ハイフン、アンダースコア |
+| `date` | 日付。`2026-10-09` または `2026-10` の形で書く |
+| `summary` | 要約 (任意) |
+| `img` | 一覧の画像 (任意。サイトのルートからのパス) |
+| `url` | リンク先 (`items: false` の投稿タイプ) |
+| `order` | 並び順 (`sort: order` の投稿タイプ) |
+
+原稿と画像はリポジトリには入れない (`.gitignore` で除外。サンプルの `content/blog/welcome.md` と、`.htaccess` だけを管理)。
+
+### 投稿タイプを増やす
+
+1. `config.php` の `SITE_POST_TYPES` に追加する (例: `news`)
+2. `blog/` を `news/` としてコピーし、`index.php` の `ContentPage::render('blog')` を `'news'` に変える
+3. `content/news/` に原稿を置く
+
+項目の説明は `config.php` のコメントを参照。
+
+### 固定ページ
+
+`content/page/about.md` に原稿を置くと、`/about/` で開ける。
+
+- 実在するフォルダと同じ slug (`blog`, `contact`, `page`, `templates` など) は使えない
+- 階層は 1 段だけ
+- `page/` に `.htaccess` を置かない
+
+### お問い合わせフォーム
+
+項目は `config.php` の `SITE_CONTACT_FIELDS` から、入力欄、確認画面、メール本文、サーバー側の検証をまとめて作る。
+
+- 項目の種類: `text`, `email`, `tel`, `url`, `textarea`, `select`, `radio`, `checkbox`, `date`
+- 最初の `email` の項目を、自動返信の宛先と管理者宛メールの返信先にする
+- トップページのセクションなどに置く場合は、`SITE_CONTACT` の `formUrl` を設定し、その場所で `renderContactForm()` を呼ぶ
+
+迷惑メール対策として、次のものがある。
+
+- Origin と Referer の確認: 送信元が `SITE_URL` と一致しない送信は 403 を返す
+- 見えない入力欄: 値があれば、送ったふりをして破棄する
+- 送信間隔の制限: 同じセッションから `SITE_CONTACT` の `interval` 秒以内に続けて送信すると 429 を返す
+
+`.env` にはSMTPのパスワードが含まれるので、Git には含めない。`inc/.htaccess` でWebから読めないようにしているが、可能であれば公開ディレクトリの外に置き、`SITE_CONTACT` の `env` を書き換えるとより安全。設定や送信に失敗すると 500 を返し、内容をサーバーのエラーログに残す。
+
+---
 
 ## ライセンス | License
 
