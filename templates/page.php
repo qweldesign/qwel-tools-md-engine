@@ -6,10 +6,9 @@
  * See LICENSE file for details.
  *
  * 固定ページ (layout: page)
- * このファイルはサイトが持つもの. デザインに合わせて書き換えてよい
  */
 
-require_once __DIR__ . '/navigation.php';
+require_once __DIR__ . '/postList.php';
 
 /**
  * $view:
@@ -27,11 +26,14 @@ function renderPage(array $view): void {
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>
-      <h1 class="main__title"><?= e($post['title'] ?? '') ?></h1>
-      <div class="entry">
+<?php renderSiteHeading(); ?>
+      <article>
+        <div class="entry">
+          <h2><?= e($post['title'] ?? '') ?></h2>
 <?= $view['content'] ?>
 
-      </div>
+        </div>
+      </article>
     </main>
 <?php
   renderFooter();

@@ -5,11 +5,10 @@
  * Released under the MIT License.
  * See LICENSE file for details.
  *
- * 個別記事のページ (layout: post)
- * このファイルはサイトが持つもの. デザインに合わせて書き換えてよい
+ * 個別記事のページ (layout: post). 左に本文, 右の aside に最新記事を並べる
  */
 
-require_once __DIR__ . '/navigation.php';
+require_once __DIR__ . '/postList.php';
 
 /**
  * $view:
@@ -29,16 +28,21 @@ function renderPostSingle(array $view): void {
 ?>
     <main class="main">
 <?php renderBreadcrumb($view['crumbs']); ?>
-      <h1 class="main__title"><?= e($post['title'] ?? '') ?></h1>
+<?php renderSiteHeading(); ?>
+      <div class="main__row">
+        <article class="main__article">
+          <div class="entry">
+            <h2><?= e($post['title'] ?? '') ?></h2>
 <?php if ($config['showDate'] && !empty($post['date'])) { ?>
-      <p><?= dateTag($post['date']) ?></p>
+            <p class="main__date"><?= dateTag($post['date']) ?></p>
 <?php } ?>
-      <div class="entry">
 <?= $view['content'] ?>
 
-      </div>
+          </div>
 <?php renderPostNav($view['adjacent'], fn(array $item): string => postUrl($view['type'], $item)); ?>
-      <p><a href="<?= e(typeUrl($view['type'])) ?>"><?= e($config['label']) ?>の一覧へ</a></p>
+        </article>
+<?php renderLatestAside($view['type'] === SITE_LATEST_TYPE ? $view['posts'] : null); ?>
+      </div>
     </main>
 <?php
   renderFooter();

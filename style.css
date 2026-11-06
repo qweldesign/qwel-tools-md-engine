@@ -27,18 +27,18 @@
   --color--secondary--active: rgb(255, 141.4015748031, 26);
   --color--tertiary: #99cc33;
   --color--tertiary--active: rgb(91.8, 122.4, 30.6);
-  --container-width--sm: 37.5rem;
-  --container-width--md: 56.25rem;
-  --container-width--lg: 75rem;
-  --container-pad--sm: 0.75rem;
-  --container-pad--md: clamp(0.75rem, 2%, 1rem);
-  --container-pad--lg: clamp(0.75rem, 2%, 1.5rem);
+  --container-width--sm: 31.25rem;
+  --container-width--md: 46.875rem;
+  --container-width--lg: 62.5rem;
+  --container-pad--sm: 0.625rem;
+  --container-pad--md: clamp(0.625rem, 2%, 0.8333333333rem);
+  --container-pad--lg: clamp(0.625rem, 2%, 1.25rem);
   --spacing--none: 0;
-  --spacing--x-small: 0.375rem;
-  --spacing--small: 0.75rem;
-  --spacing--medium: 1.5rem;
-  --spacing--large: 3rem;
-  --spacing--x-large: 6rem;
+  --spacing--x-small: 0.3125rem;
+  --spacing--small: 0.625rem;
+  --spacing--medium: 1.25rem;
+  --spacing--large: 2.5rem;
+  --spacing--x-large: 5rem;
   --font-family-base: "Noto Sans JP", "游ゴシック", "Yu Gothic", sans-serif;
   --font-weight-base: 400;
   --line-height-base: 1.8;
@@ -189,9 +189,9 @@ button, input, select, textarea {
  * Layout - Header
  */
 .header {
-  width: min(100%, 768px);
+  width: min(100%, 1000px);
   margin: 0 auto;
-  padding: 0 clamp(0.75rem, 2%, 1.5rem);
+  padding: 0 clamp(0.75rem, 2%, 1.25rem);
 }
 .header__logo {
   width: 7.2rem;
@@ -308,7 +308,7 @@ button, input, select, textarea {
   gap: var(--spacing--small);
   margin-block: var(--spacing--large);
 }
-@media (min-width: 900px) {
+@media (min-width: 800px) {
   .postNav {
     grid-template-columns: 1fr 1fr;
   }
@@ -370,14 +370,14 @@ button, input, select, textarea {
 .postItem.is-single .postItem__image {
   flex-grow: 4;
   flex-shrink: 4;
-  flex-basis: 24rem;
+  flex-basis: 20rem;
   width: 100%;
   padding-inline: var(--container-pad--sm);
 }
 .postItem.is-single .postItem__content {
   flex-grow: 5;
   flex-shrink: 5;
-  flex-basis: 30rem;
+  flex-basis: 25rem;
   width: 100%;
   padding-inline: var(--container-pad--sm);
   margin-block-end: var(--spacing--small);
@@ -418,11 +418,11 @@ button, input, select, textarea {
   align-items: center;
   justify-content: space-around;
 }
-@media (min-width: 900px) {
+@media (min-width: 800px) {
   .postList.is-grid .postList__item {
     flex-grow: 0;
     flex-shrink: 4;
-    flex-basis: 24rem;
+    flex-basis: 20rem;
   }
 }
 .postList.is-grid .postList__item {
@@ -450,7 +450,7 @@ button, input, select, textarea {
 .postList.is-list .postItem__image {
   flex-grow: 3;
   flex-shrink: 3;
-  flex-basis: 18rem;
+  flex-basis: 15rem;
   width: 100%;
   padding-inline: var(--container-pad--sm);
   margin: 0;
@@ -458,7 +458,7 @@ button, input, select, textarea {
 .postList.is-list .postItem__content {
   flex-grow: 6;
   flex-shrink: 6;
-  flex-basis: 36rem;
+  flex-basis: 30rem;
   width: 100%;
   padding-inline: var(--container-pad--sm);
 }
@@ -467,42 +467,134 @@ button, input, select, textarea {
 }
 
 /**
+ * Project - Post Index
+ * トップページと個別記事の横の「最新記事」
+ */
+.postIndex {
+  padding-inline-start: 0;
+  list-style: none;
+}
+.postIndex__item {
+  display: block;
+  width: min(100%, 18rem);
+  margin: var(--spacing--medium) auto var(--spacing--large);
+}
+.postIndex__image {
+  margin-block-end: var(--spacing--small);
+}
+.postIndex__date, .postIndex__title {
+  display: block;
+  margin-block-end: var(--spacing--x-small);
+  line-height: 1;
+}
+.postIndex__date {
+  color: var(--color--dark);
+  font-size: var(--font-size--small);
+}
+
+/**
  * Layout - Main
  */
 .main {
-  width: min(100%, 768px);
-  min-height: calc(100vh - 18rem);
+  width: min(100%, 1000px);
+  min-height: 100vh;
   margin: 0 auto;
-  padding: 0 clamp(0.75rem, 2%, 1.5rem);
+  padding: 0 clamp(0.75rem, 2%, 1.25rem);
 }
-.main__title::after {
+.main__title {
+  width: -moz-fit-content;
+  width: fit-content;
+  border-block-start: 1px dashed var(--color--secondary);
+  border-block-end: 1px dashed var(--color--secondary);
+  font-family: "Zen Old Mincho", serif;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.main__title > span {
+  display: block;
+  font-family: var(--font-family-base);
+  font-weight: 300;
+  font-size: clamp(var(--font-size--normal), 3.6vw, var(--font-size--large));
+}
+.main__title > span::after {
   content: "✶";
   margin-inline-start: var(--spacing--x-small);
   color: var(--color--secondary);
   font-size: 1.25em;
 }
-.main__title > span {
-  font-family: "Cormorant Garamond", serif;
+.main__date {
+  color: var(--color--dark);
+  font-size: var(--font-size--small);
 }
-.main__list {
-  margin: var(--spacing--medium) 0;
-  padding: 0;
-  list-style-type: none;
+.main__row {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: space-between;
 }
-.main__listItem::before {
+.main__article {
+  flex-grow: 6;
+  flex-shrink: 6;
+  flex-basis: 30rem;
+  width: 100%;
+  padding-inline: var(--container-pad--sm);
+  padding-block-end: var(--spacing--large);
+}
+.main__aside {
+  flex-grow: 3;
+  flex-shrink: 3;
+  flex-basis: 15rem;
+  width: 100%;
+  padding-inline: var(--container-pad--sm);
+  padding-block-end: var(--spacing--large);
+}
+@media (min-width: 750px) {
+  .main__aside {
+    padding-inline-start: var(--spacing--large);
+  }
+}
+.main__aside h2 {
+  position: relative;
+  font-family: "Zen Old Mincho", serif;
+}
+.main__aside h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+  height: 0.375rem;
+  background: linear-gradient(90deg, var(--color--primary--active), var(--color--lightest));
+}
+
+.entry h2 {
+  position: relative;
+  font-family: "Zen Old Mincho", serif;
+}
+.entry h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+  height: 0.375rem;
+  background: linear-gradient(90deg, var(--color--secondary), var(--color--lightest));
+}
+.entry h3::before {
   content: "✶";
   padding-inline-end: 0.5em;
   color: var(--color--primary--active);
   font-size: 1.5em;
 }
-.main__listItem.is-spec {
+.entry h4 {
   color: var(--color--dark);
-  font-size: 0.875rem;
-  letter-spacing: var(--heading-letter-spacing);
 }
-.main__listItem.is-spec::before {
+.entry h4::before {
   content: "―";
   margin-inline-end: var(--spacing--x-small);
+  padding-inline-start: 0.15em;
   padding-inline-end: 0.5em;
   color: var(--color--secondary);
   font-weight: 700;

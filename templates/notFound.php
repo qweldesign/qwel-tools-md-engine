@@ -6,26 +6,33 @@
  * See LICENSE file for details.
  *
  * 見つからないページ
- * このファイルはサイトが持つもの. デザインに合わせて書き換えてよい
  */
 
-require_once __DIR__ . '/navigation.php';
+require_once __DIR__ . '/postList.php';
 
 /**
  * $view:
  *   posts: 投稿タイプの全記事 (最新記事などに使う. inc/404.php から呼ばれたときは空)
  *   crumbs: パンくず
- *   backUrl, backLabel: 戻るリンク
+ *   backUrl, backLabel: 戻るリンク (このサイトは一覧ページを持たないので使わず, トップページへ戻す)
  */
 function renderNotFound(array $view): void {
   $title = 'ページが見つかりません';
   renderHeader(['title' => $title, 'noindex' => true]);
 ?>
     <main class="main">
-<?php renderBreadcrumb($view['crumbs']); ?>
-      <h1 class="main__title"><?= e($title) ?></h1>
-      <p>お探しのページは、削除されたか、URLが変更された可能性があります。</p>
-      <p><a href="<?= e($view['backUrl']) ?>"><?= e($view['backLabel']) ?></a></p>
+<?php renderBreadcrumb(ContentNavigation::breadcrumbs([...SITE_BREADCRUMB, ['label' => $title]])); ?>
+<?php renderSiteHeading(); ?>
+      <div class="main__row">
+        <article class="main__article">
+          <div class="entry">
+            <h2><?= e($title) ?></h2>
+            <p>お探しのページは、削除されたか、URLが変更された可能性があります。</p>
+            <p><a href="<?= e(path()) ?>">トップページへ</a></p>
+          </div>
+        </article>
+<?php renderLatestAside(); ?>
+      </div>
     </main>
 <?php
   renderFooter();

@@ -2,7 +2,7 @@
 
 # 存在しない URL は inc/404.php で表示する
 # ※ パスはドメインからの絶対パス. templates/config.php の SITE_ROOT に合わせて書き換える (例: /tools/simple-cms/inc/404.php)
-ErrorDocument 404 /inc/404.php
+ErrorDocument 404 /tools/simple-cms/inc/404.php
 
 # 静的ファイルのブラウザのキャッシュ (Apache 2.4.10 以上. HTML には付けない. 原稿の置き換えをすぐ反映するため)
 #   ?v= が付いた URL: 1 年 (assetUrl() がファイルの更新時刻を付けるので, 置き換えると URL が変わる)

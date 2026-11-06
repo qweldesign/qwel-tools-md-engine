@@ -80,15 +80,10 @@ function renderHeader(array $page = []): void {
     <noscript><link rel="stylesheet" href="<?= e(SITE_FONTS_URL) ?>"></noscript>
 <?php } ?>
     <link rel="stylesheet" href="<?= e(assetUrl('style.css')) ?>">
-<?php if (siteFileExists('assets/favicon.ico')) { ?>
-    <link rel="icon" href="<?= e(assetUrl('assets/favicon.ico')) ?>" sizes="32x32">
-<?php } ?>
-<?php if (siteFileExists('assets/favicon.svg')) { ?>
-    <link rel="icon" href="<?= e(assetUrl('assets/favicon.svg')) ?>" type="image/svg+xml">
-<?php } ?>
-<?php if (siteFileExists('assets/apple-touch-icon.png')) { ?>
-    <link rel="apple-touch-icon" href="<?= e(assetUrl('assets/apple-touch-icon.png')) ?>">
-<?php } ?>
+    <!-- favicon はドメイン直下の qwel.design のものを使う -->
+    <link rel="icon" href="/assets/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <?php if (SITE_GA_ID) { ?>
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e(SITE_GA_ID) ?>"></script>
     <script>
@@ -155,5 +150,12 @@ function renderFooter(): void {
     <script src="<?= e(assetUrl('init.js')) ?>" type="module"></script>
   </body>
 </html>
+<?php
+}
+
+// サイトの見出し (h1. どのページでも同じものを出す)
+function renderSiteHeading(): void {
+?>
+      <h1 class="main__title"><?= e(SITE_HEADING) ?><?php if (SITE_HEADING_SUB) { ?> <span><?= e(SITE_HEADING_SUB) ?></span><?php } ?></h1>
 <?php
 }

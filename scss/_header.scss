@@ -5,9 +5,9 @@
 @use "variables" as *;
 
 .header {
-  width: min(100%, 768px);
+  width: min(100%, 1000px);
   margin: 0 auto;
-  padding: 0 clamp(0.75rem, 2%, 1.5rem);
+  padding: 0 clamp(0.75rem, 2%, 1.25rem);
 
   &__logo {
     width: 7.2rem;

@@ -4,51 +4,106 @@
 
 @use "variables" as *;
 
+// 見出しの下に引くグラデーションの線
+@mixin heading-underline($color) {
+  position: relative;
+  font-family: "Zen Old Mincho", serif;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 100%;
+    height: 0.375rem;
+    background: linear-gradient(90deg, $color, theme-color("lightest"));
+  }
+}
+
 .main {
-  width: min(100%, 768px);
-  min-height: calc(100vh - 18rem);
+  width: min(100%, 1000px); // inner = 960px
+  min-height: 100vh;
   margin: 0 auto;
-  padding: 0 clamp(0.75rem, 2%, 1.5rem);
+  padding: 0 clamp(0.75rem, 2%, 1.25rem);
 
+  // サイトの見出し (上下に点線)
   &__title {
-    &::after {
-      content: "✶";
-      margin-inline-start: space("x-small");
-      color: theme-color("secondary");
-      font-size: 1.25em;
-    }
+    width: fit-content;
+    border-block-start: 1px dashed theme-color("secondary");
+    border-block-end: 1px dashed theme-color("secondary");
+    font-family: "Zen Old Mincho", serif;
+    font-weight: 600;
+    line-height: 1.6;
 
+    // 副題
     & > span {
-      font-family: "Cormorant Garamond", serif;
-    }
-  }
+      display: block;
+      font-family: var(--font-family-base);
+      font-weight: 300;
+      font-size: clamp(#{font-size("normal")}, 3.6vw, #{font-size("large")});
 
-  &__list {
-    margin: space("medium") 0;
-    padding: 0;
-    list-style-type: none;
-  }
-
-  &__listItem {
-    &::before {
-      content: "✶";
-      padding-inline-end: 0.5em;
-      color: color-active("primary");
-      font-size: 1.5em;
-    }
-
-    &.is-spec {
-      color: theme-color("dark");
-      font-size: 0.875rem;
-      letter-spacing: var(--heading-letter-spacing);
-
-      &::before {
-        content: "―";
-        margin-inline-end: space("x-small");
-        padding-inline-end: 0.5em;
+      &::after {
+        content: "✶";
+        margin-inline-start: space("x-small");
         color: theme-color("secondary");
-        font-weight: 700;
+        font-size: 1.25em;
       }
+    }
+  }
+
+  &__date {
+    color: theme-color("dark");
+    font-size: font-size("small");
+  }
+
+  // 本文 + 最新記事 の 2 カラム
+  &__row {
+    @include row(space-between, flex-start);
+  }
+
+  &__article {
+    @include col(6, true);
+    padding-block-end: space("large");
+  }
+
+  &__aside {
+    @include col(3, true);
+    padding-block-end: space("large");
+
+    @media (min-width: 750px) { // article と aside が 2 カラムになるとき
+      padding-inline-start: space("large");
+    }
+
+    h2 {
+      @include heading-underline(color-active("primary"));
+    }
+  }
+}
+
+// 本文 (Markdown から変換した HTML)
+.entry {
+  h2 {
+    @include heading-underline(theme-color("secondary"));
+  }
+
+  h3::before {
+    content: "✶";
+    padding-inline-end: 0.5em;
+    color: color-active("primary");
+    font-size: 1.5em;
+  }
+
+  h4 {
+    color: theme-color("dark");
+
+    &::before {
+      content: "―";
+      margin-inline-end: space("x-small");
+      padding-inline-start: 0.15em;
+      padding-inline-end: 0.5em;
+      color: theme-color("secondary");
+      font-weight: 700;
     }
   }
 }
