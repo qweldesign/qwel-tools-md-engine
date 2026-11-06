@@ -37,6 +37,26 @@
   }
 }
 
+// ラジオボタンとチェックボックスの選択肢
+.form__choices {
+  @include list-unstyled();
+  margin: 0;
+
+  li {
+    margin-block: 0 space("x-small");
+  }
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: space("x-small");
+  }
+}
+
+.confirm, .thanks {
+  text-align: center;
+}
+
 .confirm {
   table {
     @include table();

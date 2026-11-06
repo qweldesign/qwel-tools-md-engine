@@ -110,6 +110,7 @@ function renderFooter(): void {
         <small class="footer__copyright">&copy; <?= e(copyrightYears()) ?> <?= e(SITE_OWNER) ?></small>
       </div>
     </footer>
+    <script src="<?= e(path('init.js')) ?>" type="module"></script>
   </body>
 </html>
 <?php

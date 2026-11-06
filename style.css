@@ -658,7 +658,7 @@ button, input, select, textarea {
   letter-spacing: var(--small-letter-spacing);
   color: var(--color--secondary);
 }
-.form input[type=text], .form input[type=tel], .form input[type=url], .form input[type=email], .form input[type=password], .form input[type=file], .form select, .form optgroup, .form textarea {
+.form input[type=text], .form input[type=tel], .form input[type=url], .form input[type=email], .form input[type=date], .form input[type=password], .form input[type=file], .form select, .form optgroup, .form textarea {
   display: block;
   width: 100%;
   padding: var(--spacing--x-small);
@@ -740,6 +740,24 @@ button, input, select, textarea {
   height: 3.5rem;
   margin-inline: var(--spacing--small);
   line-height: 3.5rem;
+}
+
+.form__choices {
+  padding-inline-start: 0;
+  list-style: none;
+  margin: 0;
+}
+.form__choices li {
+  margin-block: 0 var(--spacing--x-small);
+}
+.form__choices label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing--x-small);
+}
+
+.confirm, .thanks {
+  text-align: center;
 }
 
 .confirm table thead, .confirm table tbody {

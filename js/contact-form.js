@@ -7,39 +7,31 @@
 
 /**
  * お問い合わせフォーム (入力 → 確認 → 完了)
- * 入力内容は sessionStorage で確認画面へ渡し, 確認画面から api/send.php へ送信する
+ * 入力内容は sessionStorage で確認画面へ渡し, 確認画面から送信する
  *
- * 入力画面: form[data-contact-form]
- *   ボット対策の見えない入力欄: [data-contact-honeypot] (確認画面には表示しない)
- * 確認画面: table[data-contact-confirm]
+ * 使い方:
+ * 入力画面: form[data-contact-form][data-confirm-url]
+ *   ボット対策の見えない入力欄: [data-contact-honeypot] (確認画面から戻るときに戻さない)
+ * 確認画面: [data-contact-confirm][data-form-url][data-thanks-url][data-send-url]
+ *   値を入れる欄: [data-contact-value="name 属性"]
  *   ボタン: [data-contact-send], [data-contact-back]
  *   メッセージ: [data-contact-message]
  *   入力内容があるとき / ないときに表示する要素: [data-contact-filled], [data-contact-empty]
+ *
+ * オプション: なし (URL は data 属性で渡す)
  */
 export default class ContactForm {
-  constructor(options = {}) {
-    // SessionStorage
+  constructor() {
     this.storageKey = 'contact-form';
 
-    // 各画面の URL
-    this.formUrl    = options.formUrl    ?? './';
-    this.confirmUrl = options.confirmUrl ?? 'confirm.html';
-    this.thanksUrl  = options.thanksUrl  ?? 'thanks.html';
-    this.sendUrl    = options.sendUrl    ?? './api/send.php';
-
-    // 入力画面
     this.form = document.querySelector('[data-contact-form]');
-    if (this.form) {
-      this.formInit();
-    }
-    // 確認画面
+    if (this.form) this.formInit();
+
     this.confirm = document.querySelector('[data-contact-confirm]');
-    if (this.confirm) {
-      this.confirmInit();
-    }
+    if (this.confirm) this.confirmInit();
   }
 
-  // SessionStorage の入力内容 ({ values, hidden } または null)
+  // sessionStorage の入力内容 (なければ null)
   load() {
     try {
       const data = sessionStorage.getItem(this.storageKey);
@@ -49,31 +41,26 @@ export default class ContactForm {
     }
   }
 
+  // 入力画面
   formInit() {
     // 確認画面から戻ってきたときは, 入力内容を戻す
-    const stored = this.load();
-    if (stored) this.restore(stored.values);
+    const values = this.load();
+    if (values) this.restore(values);
 
-    // 確認ボタンのイベント登録
     this.form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      // フォームのデータを SessionStorage に格納
-      const formData = new FormData(this.form); // FormData をそのまま扱う (重複キー対応)
-      const values = {};
-
+      // チェックボックスは, 選んだ数によらず配列にする
+      const formData = new FormData(this.form);
+      const data = {};
       for (const key of new Set(formData.keys())) {
-        const items = formData.getAll(key); // 同じキーの値を全部取得
-        values[key] = items.length === 1 ? items[0] : items; // 1つなら文字列, 複数なら配列
+        const items = formData.getAll(key);
+        const isMultiple = this.form.querySelector(`[type="checkbox"][name="${CSS.escape(key)}"]`) !== null;
+        data[key] = isMultiple ? items : items[0];
       }
 
-      // 確認画面に表示しない項目 (ボット対策の見えない入力欄)
-      const hidden = Array.from(this.form.querySelectorAll('[data-contact-honeypot]'), (elem) => elem.name);
-
-      sessionStorage.setItem(this.storageKey, JSON.stringify({ values, hidden }));
-
-      // 確認画面へ遷移
-      location.href = this.confirmUrl;
+      sessionStorage.setItem(this.storageKey, JSON.stringify(data));
+      location.href = this.form.dataset.confirmUrl;
     });
   }
 
@@ -91,48 +78,33 @@ export default class ContactForm {
     }
   }
 
+  // 確認画面
   confirmInit() {
-    const stored = this.load();
-    const filled = document.querySelector('[data-contact-filled]');
-    const empty = document.querySelector('[data-contact-empty]');
-    this.message = document.querySelector('[data-contact-message]');
-    this.sendButton = document.querySelector('[data-contact-send]');
+    const values = this.load();
+    const filled = this.confirm.querySelector('[data-contact-filled]');
+    const empty = this.confirm.querySelector('[data-contact-empty]');
+    this.message = this.confirm.querySelector('[data-contact-message]');
+    this.sendButton = this.confirm.querySelector('[data-contact-send]');
 
     // 入力内容がない (確認画面を直接開いた) 場合
-    if (!stored) {
+    if (!values) {
       if (empty) empty.hidden = false;
       return;
     }
     if (filled) filled.hidden = false;
 
-    // values を順次処理
-    const { values, hidden = [] } = stored;
-    for (const key in values) {
-      if (hidden.includes(key)) continue;
+    this.confirm.querySelectorAll('[data-contact-value]').forEach((cell) => {
+      const value = values[cell.dataset.contactValue] ?? '';
+      cell.textContent = Array.isArray(value) ? value.join(', ') : value;
+    });
 
-      const tr = document.createElement('tr');
-      // キー: name 属性
-      const th = document.createElement('th');
-      th.textContent = key;
-
-      // 値 (配列対応)
-      const td = document.createElement('td');
-      td.textContent = Array.isArray(values[key]) ? values[key].join(', ') : values[key];
-
-      tr.appendChild(th);
-      tr.appendChild(td);
-      this.confirm.appendChild(tr);
-    }
-
-    // 戻るボタン (入力画面で SessionStorage から入力内容を戻す)
-    const backButton = document.querySelector('[data-contact-back]');
+    const backButton = this.confirm.querySelector('[data-contact-back]');
     if (backButton) {
       backButton.addEventListener('click', () => {
-        location.href = this.formUrl;
+        location.href = this.confirm.dataset.formUrl;
       });
     }
 
-    // 送信ボタン
     if (this.sendButton) {
       this.sendButton.addEventListener('click', () => this.send(values));
     }
@@ -149,32 +121,29 @@ export default class ContactForm {
     if (this.sendButton) this.sendButton.disabled = true;
     if (this.message) this.message.hidden = true;
 
-    // APIを使用して送信
     try {
-      const res = await fetch(this.sendUrl, {
+      const res = await fetch(this.confirm.dataset.sendUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
+        body: JSON.stringify(values),
       });
 
       if (res.ok) {
-        // 送信成功: SessionStorage を空にして, 完了画面へ遷移
         sessionStorage.removeItem(this.storageKey);
-        location.href = this.thanksUrl;
+        location.href = this.confirm.dataset.thanksUrl;
         return;
       }
 
-      // 送信失敗 (send.php は入力の不備などを JSON で返す)
+      // send.php は入力の不備などを JSON で返す
       const body = await res.json().catch(() => ({}));
       if (res.status === 400 && body.errors) {
-        this.showMessage(Object.values(body.errors).join('\n') + '\n前画面に戻って修正してください。');
+        this.showMessage(Object.values(body.errors).join('\n') + '\n入力画面に戻って修正してください。');
       } else if (res.status === 429) {
         this.showMessage(`続けて送信することはできません。${body.retryAfter ?? 60}秒ほど待ってから、もう一度お試しください。`);
       } else {
         this.showMessage('送信に失敗しました。時間をおいて、もう一度お試しください。');
       }
     } catch (err) {
-      // ネットワークエラー
       console.error('Network error:', err);
       this.showMessage('通信に失敗しました。通信環境をご確認のうえ、もう一度お試しください。');
     }

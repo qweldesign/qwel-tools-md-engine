@@ -8,6 +8,8 @@
 const SITE_NAME = 'Simple CMS';
 // トップページの title (空なら SITE_NAME)
 const SITE_TITLE = 'Simple CMS | Markdown で作る軽量なサイト';
+// サイトの URL (末尾のスラッシュなし. お問い合わせフォームの送信元の確認に使う)
+const SITE_URL = 'https://qwel.design';
 // サイトのルートのパス (ドメイン直下なら /, サブディレクトリなら /tools/simple-cms/ のように)
 const SITE_ROOT = '/';
 const SITE_LANG = 'ja';
@@ -67,5 +69,69 @@ const SITE_POST_TYPES = [
     'path'   => '',
     'layout' => 'page',
     'count'  => null,
+  ],
+];
+
+/**
+ * お問い合わせフォーム
+ * 宛先と SMTP の秘密の値は inc/.env に書く (inc/.env.example を参照)
+ *
+ * path: フォームの URL (サイトのルートからのパス. 同じディレクトリに index.php, confirm/, thanks/ を置く)
+ * formUrl: 入力画面を別の場所に置くときの URL (例: #contact. 使わないなら空文字)
+ * title: ページのタイトル
+ * lead: 入力画面の上の文 (HTML を書ける)
+ * interval: 同じ人 (セッション) が続けて送信できるまでの秒数 (0 で制限しない)
+ * replyFooter: 自動返信メールの末尾に付ける文
+ * env: .env の場所 (公開ディレクトリの外に置く場合は, このパスを書き換える)
+ */
+const SITE_CONTACT = [
+  'path'        => 'contact/',
+  'formUrl'     => '',
+  'title'       => 'お問い合わせ',
+  'lead'        => 'お気軽にお問い合わせください。',
+  'interval'    => 60,
+  'replyFooter' => '
+後日ご返信いたしますので今しばらくお待ちください。
+
+────────────────────────────────────────────────
+福井の物作りのためのWeb制作&プログラミング教室
+QWEL.DESIGN (クヴェル・デザイン)
+────────────────────────────────────────────────
+',
+  'env'         => __DIR__ . '/inc/.env',
+];
+
+/**
+ * お問い合わせフォームの項目 (キーが name 属性. 並び順に表示する)
+ * label: 項目名 (確認画面とメール本文にも使う)
+ * type: text, email, tel, url, textarea, select, radio, checkbox, date (既定で text)
+ *       (最初の email の項目を, 自動返信の宛先と管理者宛メールの返信先にする)
+ * required: 必須か
+ * autocomplete, placeholder: 入力欄の属性
+ * options: select, radio, checkbox の選択肢
+ * rows: textarea の高さ (既定で 8)
+ */
+const SITE_CONTACT_FIELDS = [
+  'name' => [
+    'label'        => 'お名前',
+    'required'     => true,
+    'autocomplete' => 'name',
+  ],
+  'email' => [
+    'label'        => 'メールアドレス',
+    'type'         => 'email',
+    'required'     => true,
+    'autocomplete' => 'email',
+  ],
+  'subject' => [
+    'label'   => '件名',
+    'type'    => 'select',
+    'options' => ['ご質問・お問い合わせ', 'その他'],
+  ],
+  'message' => [
+    'label'    => 'メッセージ本文',
+    'type'     => 'textarea',
+    'required' => true,
+    'rows'     => 6,
   ],
 ];
