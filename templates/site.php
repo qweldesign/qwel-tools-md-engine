@@ -29,7 +29,8 @@ function renderHeader(array $page = []): void {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--
-      Built with QWEL Markdown Engine (Simple CMS)
+      Built with QWEL Markdown Engine (Simple CMS) v<?= e(SITE_ENGINE_VERSION) ?>
+
       A lightweight, file-based CMS that renders Markdown as HTML.
       Created by QWEL.DESIGN - https://qwel.design
       Source: https://github.com/qweldesign/qwel-tools-md-engine (MIT License)

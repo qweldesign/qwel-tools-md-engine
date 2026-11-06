@@ -278,7 +278,7 @@ $-grid-base: 5.33rem; // 上書きの中で使い回す値
 - コミットは短い英文。`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `release:`
 - `Closes #番号` / `Refs #番号` を書く。ただし、履歴を使い回す starter-template には書かない (番号が派生先で意味を持たないため)
 - ブランチは `feat/番号-内容`
-- release は `release: vX.Y.Z - 内容`。CHANGELOG と README を含める
+- release は `release: vX.Y.Z - 内容`。CHANGELOG と README を含める。このリポジトリでは `inc/helpers.php` の `SITE_ENGINE_VERSION` も更新する
 - CHANGELOG は古い版を上に書き、日付は書かない
 
 ---

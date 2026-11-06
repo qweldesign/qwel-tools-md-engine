@@ -9,6 +9,9 @@
  * config.php を読み込んだあとに使う
  */
 
+// エンジンの版 (リリースのときに更新する. サイトがどの版から作られたかを, 公開中のページのソースで確かめられるように出力する)
+const SITE_ENGINE_VERSION = '0.1.0';
+
 // HTMLに出す値のエスケープ
 function e(?string $value): string {
   return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
