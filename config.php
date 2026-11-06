@@ -54,6 +54,8 @@ const SITE_SNS = [
 const SITE_PAGES = [
   'contact/',
 ];
+// robots.txt でクロールを拒否するパス (サイトのルートからのパス. 例: 'private/'. 不要なら空の配列)
+const SITE_ROBOTS_DISALLOW = [];
 // 著作権表示 (開始年 - 今年 運営者)
 const SITE_OWNER = 'QWEL.DESIGN';
 const SITE_START_YEAR = 2019;

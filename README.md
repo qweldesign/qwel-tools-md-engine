@@ -12,7 +12,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 - データベース不要、原稿はファイルで管理
 - 複数の投稿タイプ (ブログ、お知らせなど) をディレクトリごとに管理
 - 固定ページを `/slug/` で表示
-- サイトマップを原稿から自動で作成
+- サイトマップと robots.txt を自動で作成
 - 個別のページを持たない投稿タイプ (リンク集、作品集など)
 - ページ送り、パンくず、前後の記事、最新記事
 - `/blog/xxx/` 形式のURL
@@ -67,7 +67,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 3. `config.php` を書き換える
 4. `.htaccess` を含めて、サーバーにアップロードする
 
-`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。サブディレクトリに置くときは、`.htaccess` の `ErrorDocument` のパスを `SITE_ROOT` に合わせる。
+`inc/vendor/` がないと、サイト全体を表示できない。`.htaccess` はドットファイルなので、アップロードを忘れないようにすること。サブディレクトリに置くときは、`.htaccess` の `ErrorDocument` のパスを `SITE_ROOT` に合わせる。robots.txt はドメインのルートでしか読まれないので、ドメインのルートの robots.txt に `Sitemap:` の行を書く。
 
 手元では、PHPの確認用サーバーで表示を確かめられる。
 
@@ -84,6 +84,7 @@ config.php        サイトの設定
 index.php         トップページ (サイトが自由に書き換える)
 404.php           存在しない URL のページ (.htaccess の ErrorDocument から呼ぶ)
 sitemap.php       サイトマップ (/sitemap.xml)
+robots.php        robots.txt (/robots.txt)
 blog/             投稿タイプ「blog」の入口 (index.php, .htaccess)
 page/             固定ページの入口 (index.php だけ)
 contact/          お問い合わせフォームの入口 (入力、confirm/、thanks/)
