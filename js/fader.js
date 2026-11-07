@@ -31,6 +31,7 @@ export default class Fader {
     this.currentIndex = 0;
     this.itemsCount = this.items.length;
     this.items[0].classList.add('is-current');
+    this.elem.classList.add('is-ready'); // JS が動く前は, _fader.scss が最初のアイテムを表示する
 
     // ナビゲーション
     this.setupNav();
