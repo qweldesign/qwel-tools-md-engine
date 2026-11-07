@@ -7,17 +7,18 @@
 
 /**
  * スライドアニメーションで遷移するギャラリー
- * ドラッグ, ホイール操作対応
+ * ドラッグ, 横方向のホイール操作対応
  *
  * 使い方:
  * _slider.scss をバンドルしたcssを読み込み,
- * 画面幅100%の要素内にギャラリーを配置する
+ * ギャラリーを配置する (現在のアイテムはギャラリー本体の幅の中央に来る)
  * ギャラリー本体 (div 等) に [data-gallery="slider"] 属性を付与し,
  * ギャラリーインナーに (ul 等) [data-gallery-main] 属性を付与し,
  * ギャラリーアイテムに (li 等) [data-gallery-item] 属性を付与する
  *
  * オプション (data 属性で指定):
  * data-flickable: ドラッグ, ホイール操作に対応 (既定でOFF, ONにする場合値は不要)
+ * data-wheel-vertical: 縦方向のホイールでもスライドする (既定でOFF. ページのスクロールを奪うので, 必要なときだけ使う)
  * data-aspect-ratio: アスペクト比 (SCSSも修正が必要)
  * data-gap: アイテム間隔(px) SCSSで指定不可
  * data-interval: アニメーション時間間隔
@@ -35,6 +36,7 @@ export default class Slider {
 
     // オプションを data 属性から取得
     this.flickable = this.elem.hasAttribute('data-flickable');
+    this.wheelVertical = this.elem.hasAttribute('data-wheel-vertical');
     this.aspectRatio = Number(this.elem.dataset.aspectRatio) || 8 / 5;
     // Number(undefined) は NaN になり ?? では既定値に落ちないため, 変換前に既定値を当てる
     this.gap = Number(this.elem.dataset.gap ?? 96);
@@ -61,6 +63,13 @@ export default class Slider {
 
     // リサイズ
     this.windowResizeHandler();
+
+    // 画像の読み込み前はアイテムの幅が確定しないため, 読み込み後に位置を再計算する
+    this.items.forEach((item) => {
+      item.querySelectorAll('img').forEach((img) => {
+        if (!img.complete) img.addEventListener('load', () => this.windowResizeHandler(), { once: true });
+      });
+    });
 
     // 開始
     if (this.interval >= 1000) this.startInterval();
@@ -282,7 +291,10 @@ export default class Slider {
 
       // ホイール操作
       this.inner.addEventListener('wheel', (event) => {
-        this.delta = event.deltaY;
+        // 縦方向のホイールは, 既定ではページのスクロールに任せる
+        const isHorizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+        if (!isHorizontal && !this.wheelVertical) return;
+        this.delta = isHorizontal ? event.deltaX : event.deltaY;
         this.myWheelHandler();
         event.preventDefault();
       });
@@ -397,7 +409,8 @@ export default class Slider {
 
   getAdjustedDistance(index) {
     const len = this.items.length;
-    let result = window.innerWidth / 2;
+    // ギャラリー本体の中央に揃える (画面幅 100% で置いた場合は画面の中央)
+    let result = this.elem.clientWidth / 2;
     result -= this.items[index % len].clientWidth / 2;
     for (let i = 0; i > -3; i--) {
       const j = (index + i - 1 + len) % len;
