@@ -195,3 +195,15 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 修正は `v1.0.0` から切ったコミットなので、古い版のサイトにも新機能なしで当てられる (`e445dad`, `9dbb8c0`)。
 
 [1.2.1]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.2.1
+
+## [1.2.2] スライダーのリンクの名前
+
+### スライダー
+
+- 前後のリンクに `aria-label` を付ける (「前のスライドへ」「次のスライドへ」)。中身がアイコンだけで、リンクの名前がなかった
+
+### 1.2.1 からの更新
+
+- `js/slider.js` を置き換える。`inc/`, `templates/` の書き換えは要らない
+
+[1.2.2]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.2.2
