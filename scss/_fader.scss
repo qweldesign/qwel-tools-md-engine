@@ -45,6 +45,12 @@
       opacity: 0;
     }
   }
+
+  // JS が動く前も, 最初のアイテムを表示する (ファーストビューの画像が遅れないように)
+  &:not(.is-ready) &__item:first-child {
+    z-index: 2;
+    opacity: 1;
+  }
 }
 
 .faderNav {
