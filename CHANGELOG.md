@@ -207,3 +207,20 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - `js/slider.js` を置き換える。`inc/`, `templates/` の書き換えは要らない
 
 [1.2.2]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.2.2
+
+## [1.3.0] 既定の Web フォント
+
+### Web フォント
+
+- 既定の `SITE_FONTS_URL` で `Noto Sans JP` を読み込む。CSS の既定の書体は `Noto Sans JP` なのに読み込んでおらず、OS に入っている環境でだけ使われていた (Mac や iPhone ではヒラギノになっていた)
+- 使っていなかった `Noto Sans`, `Noto Serif` と `Cormorant Garamond` を外す。`Cormorant Garamond` を指定していた `.main__title > span` は、どのテンプレートも `<span>` を出さないので消す
+- 新しく作るサイトは、日本語の Web フォントで 1 ページに約 1 MB を読み込む。速さを優先するなら `SITE_FONTS_URL` を空にする (README の「Web フォント」)
+
+### 1.2.2 からの更新
+
+- 新しく作るサイトの既定値の変更。既存のサイトは自分の `SITE_FONTS_URL` を持つので、当てなくてよい
+- 当てる場合、`templates/config.php` の `SITE_FONTS_URL` は自分の値を残す。題を書き換えたサイトでは `scss/_main.scss` も自分の版を残す
+
+修正は `v1.0.0` から切ったコミットなので、古い版のサイトにも新機能なしで当てられる (`c6ee41e`)。
+
+[1.3.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.3.0

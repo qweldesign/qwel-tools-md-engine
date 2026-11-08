@@ -112,6 +112,10 @@ php -S 127.0.0.1:8000
 
 日本語のフォントの CSS は数百 KB になることがある。使う書体と太さだけに絞ると、転送量そのものが減る。
 
+既定では `Noto Sans JP` を可変フォント (`wght@100..900`) で読む。太さを並べて指定するより CSS が軽い。日本語の Web フォントは、ページで使う文字を含む分だけを取得するが、それでも 1 ページで約 1 MB になる。表示の速さを優先するなら、`SITE_FONTS_URL` を空にして OS の書体に任せる (Mac や iPhone ではヒラギノ、Windows では游ゴシックや Noto Sans JP など。OS によって見た目が変わる)。
+
+書体を変えるときは、`SITE_FONTS_URL` と一緒に、`scss/_variables.scss` の `@forward "settings" with (...)` に `$font-family-sans` などを足す。CSS が名前を挙げる書体と、読み込む書体を揃える。
+
 ### LCP の画像
 
 CSS の背景画像など、発見が遅れる LCP の候補の画像は、`preloadImage()` で先に読める。URLは実際に表示する画像と同じにする (違うと 2 度読む) ので、`assetUrl()` の `?v=` が付く画像には使わない。
