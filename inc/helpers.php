@@ -91,6 +91,27 @@ function isExternal(string $path): bool {
   return (bool)preg_match('#^https?://#', $path);
 }
 
+/**
+ * 文字を絞って読む Google Fonts の CSS の URL (ヒーローの見出しなど, 決まった文言だけに使う書体を軽く読む)
+ * $family: 書体と太さ (例: "Zen Kaku Gothic New:wght@400;700". 空白は + に置き換える)
+ * $text: 表示する文言をそのまま書く. 重なる文字と改行は除き, 並べ替えて URL に入れる
+ */
+function textFontUrl(string $family, string $text): string {
+  $chars = array_unique(mb_str_split(preg_replace('/[\r\n\t]/u', '', $text)));
+  sort($chars, SORT_STRING);
+  return 'https://fonts.googleapis.com/css2?family=' . str_replace(' ', '+', trim($family))
+    . '&text=' . rawurlencode(implode('', $chars)) . '&display=swap';
+}
+
+// 文字を絞って読む書体の URL の一覧 (templates/config.php の SITE_TEXT_FONTS. 古い config.php では空)
+function textFontUrls(): array {
+  $fonts = defined('SITE_TEXT_FONTS') ? SITE_TEXT_FONTS : [];
+  return array_values(array_filter(array_map(
+    fn(array $font): string => ($font['family'] ?? '') !== '' && ($font['text'] ?? '') !== '' ? textFontUrl($font['family'], $font['text']) : '',
+    $fonts
+  )));
+}
+
 // サイトのルートからのパスを, サーバー上のパスにする
 function siteFile(string $path): string {
   return dirname(__DIR__) . '/' . trim($path, '/');

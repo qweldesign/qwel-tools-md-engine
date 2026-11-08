@@ -20,6 +20,10 @@ const SITE_LANG = 'ja';
 const SITE_DESCRIPTION = 'Markdown の原稿から、データベースなしでサイトを作るエンジンです。';
 // Google Fonts などの CSS の URL (不要なら空文字. display=swap を付ける. 書体と太さを絞ると転送量が減る)
 const SITE_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap';
+// 文字を絞って読む書体 (ヒーローの見出しなど, 決まった文言だけに使う書体. 不要なら空の配列)
+// family は書体と太さ, text は表示する文言をそのまま書く. 文言を変えたら text も直す (抜けた文字は代わりの書体で表示される)
+// 例: ['family' => 'Zen Kaku Gothic New:wght@700', 'text' => '福井・越前海岸から―フルスクラッチのWeb制作とUI/UXクラフト']
+const SITE_TEXT_FONTS = [];
 // Google Analytics の測定 ID (不要なら空文字)
 const SITE_GA_ID = '';
 // OGP 画像の既定値 (サイトのルートからのパス. 不要なら空文字) と代替テキスト
