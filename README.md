@@ -116,6 +116,19 @@ php -S 127.0.0.1:8000
 
 書体を変えるときは、`SITE_FONTS_URL` と一緒に、`scss/_variables.scss` の `@forward "settings" with (...)` に `$font-family-sans` などを足す。CSS が名前を挙げる書体と、読み込む書体を揃える。
 
+ヒーローの見出しなど、決まった文言だけに使う書体は、`SITE_TEXT_FONTS` で文字を絞って読める。書体のファイルが数 KB で済むので、本文は OS の書体に任せ、目立つ所だけ Web フォントにするときに使う。
+
+```php
+const SITE_TEXT_FONTS = [
+  ['family' => 'Zen Kaku Gothic New:wght@700', 'text' => '海辺の古民家に泊まる'],
+];
+```
+
+- `family` は書体と太さ。Google Fonts の URL の `family=` と同じ書き方 (空白はそのままでよい)
+- `text` は表示する文言をそのまま書く。重なる文字と改行は除いて URL に入れる (`textFontUrl()`)
+- 文言を変えたら `text` も直す。抜けた文字は代わりの書体で表示され、見た目では気づきにくい。健全性チェックは文字の抜けを見ない
+- CSS の `font-family` には、`SITE_FONTS_URL` の書体とは別に、この書体の名前を書く
+
 ### LCP の画像
 
 CSS の背景画像など、発見が遅れる LCP の候補の画像は、`preloadImage()` で先に読める。URLは実際に表示する画像と同じにする (違うと 2 度読む) ので、`assetUrl()` の `?v=` が付く画像には使わない。
