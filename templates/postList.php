@@ -44,6 +44,7 @@ function renderPostList(array $view): void {
 }
 
 // 記事の並び (一覧のページとトップページで使う). 画像は原稿の img, なければ SITE_THUMBNAIL_IMAGE
+// 画像の sizes は本文の画像と同じ (どちらも .main の中に並び, 本文の幅を超えない)
 function renderPostItems(array $posts, string $type): void {
   $showDate = postType($type)['showDate'];
 ?>
@@ -54,7 +55,7 @@ function renderPostItems(array $posts, string $type): void {
         <li class="postList__item postItem">
 <?php if ($image) { ?>
           <figure class="postItem__image">
-            <img src="<?= e(path($image)) ?>" alt=""<?= imageAttrs($image, $index === 0 ? 'high' : 'lazy') ?>>
+            <img src="<?= e(path($image)) ?>" alt=""<?= imageAttrs($image, $index === 0 ? 'high' : 'lazy', contentImageSizes()) ?>>
           </figure>
 <?php } ?>
           <div class="postItem__content">
