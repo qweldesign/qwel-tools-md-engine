@@ -34,13 +34,17 @@ const SITE_OG_LOCALE = 'ja_JP';
 // 一覧の画像の既定値 (記事に img がない場合. 不要なら空文字)
 const SITE_THUMBNAIL_IMAGE = '';
 // 画像の幅ごとの WebP (imageAttrs() の srcset. JPEG と PNG から cache/images/ に作る. 不要なら空の配列)
-// 既定はコンテナの内寸 (1152px) の 1/3, 2/3, 1 (768 はモバイルの全幅を受け持つ). $grid-base やコンテナの幅を変えたら, ここも直す
-// これより大きい幅が要る端末 (デスクトップの高解像度の画面) には元の画像を使うので, 元の画像は表示する幅の 2 倍程度に縮めて上げる
+// 既定はスマートフォンの画面幅いっぱい (sizes の既定の 100vw) に合わせた 2 つ
+//   768: 2倍前後の画面 (PageSpeed の端末は 412px x 1.75 = 721px, iPhone SE や多くの Android は 720〜750px)
+//   1200: 3倍の画面 (iPhone 12〜16 は 1170〜1179px, 高精細の Android は約 1080px)
+// これより大きい幅が要る端末 (大きい iPhone, デスクトップ) は元の画像を使う. 元の画像は表示する幅の 2倍程度に縮めて上げる
+// 小さく表示する画像を imageSizes() で詰めるサイトは, 384 などを足す
 // ページを表示するときに, まだない幅を作る. 元の画像より大きい幅は作らない. cache/images/ はいつ消してもよい
-const SITE_IMAGE_WIDTHS = [384, 768, 1152];
-// 原稿の本文の画像の表示幅 (imageSizes() の引数. container はコンテナのキー sm, md, lg または内寸の px, ratios はブレイクポイントごとの割合)
-// 既定は .main の内寸 (768px から左右の余白を引いた 720px). 例: ['container' => 'md', 'ratios' => ['md' => 2 / 3]]
-const SITE_CONTENT_IMAGE_SIZES = ['container' => 720];
+const SITE_IMAGE_WIDTHS = [768, 1200];
+// 原稿の本文の画像の表示幅 (imageSizes() の引数. 空なら 100vw. 一覧のサムネイルにも使う)
+// container はコンテナのキー sm, md, lg または内寸の px, ratios はブレイクポイントごとの割合. 例: ['container' => 'md', 'ratios' => ['md' => 2 / 3]]
+// 実際の表示幅より小さく見積もると画像が粗くなるので, 詰めないなら空のままにする
+const SITE_CONTENT_IMAGE_SIZES = [];
 // URL の形式 (true: /blog/xxx/, false: /blog/?slug=xxx). .htaccess が効かない php -S では false になる
 const SITE_PRETTY_URLS = PHP_SAPI !== 'cli-server';
 

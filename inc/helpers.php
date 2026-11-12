@@ -72,7 +72,7 @@ function imageSizes(string|int $container = 'lg', array $ratios = []): string {
   return ImageVariants::sizes($container, $ratios);
 }
 
-// 原稿の本文の画像の sizes 属性の値 (templates/config.php の SITE_CONTENT_IMAGE_SIZES. 古い config.php では 100vw)
+// 原稿の本文の画像の sizes 属性の値 (templates/config.php の SITE_CONTENT_IMAGE_SIZES. 空の配列と古い config.php では 100vw)
 function contentImageSizes(): string {
   static $sizes = null;
   if ($sizes !== null) return $sizes;
