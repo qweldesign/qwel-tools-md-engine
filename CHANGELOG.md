@@ -282,3 +282,18 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - `--root-font-size` がない古い `style.css` では、今までどおり 16px で換算する
 
 [1.4.1]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.4.1
+
+## [1.4.2] 画像の WebP の既定値の見直し
+
+### 画像
+
+- `SITE_IMAGE_WIDTHS` の既定を `[768, 1200]` にする。`sizes` を詰めない既定のままでは 384 は選ばれず、1152 は 3 倍の画面の iPhone (1170〜1179px) に少し足りなかった。768 は 2 倍前後の画面 (PageSpeed の端末は 412px × 1.75 = 721px)、1200 は 3 倍の画面を受け持つ。JPG は幅を変えなくても WebP にすると 4〜6 割軽くなるので、iPhone にも WebP を配る。PageSpeed だけを考えるなら `[768]` でもよい
+- `SITE_CONTENT_IMAGE_SIZES` の既定を空の配列にし、本文の画像と一覧のサムネイルの `sizes` を `100vw` にする。前の既定 (エンジンの `.main` の内寸 720px) は、本文の幅を変えたサイトで表示幅を小さく見積もり、画像が粗くなることがあった
+- README を組み直す。既定のままで使え、`sizes` を詰めるのは任意とした (詰めるには表示幅を測って確かめる手間がかかり、効くのは主にデスクトップと小さな画像)
+
+### 1.4.1 からの更新
+
+- 新しく作るサイトの既定値の変更。`inc/` の書き換えはない (コメントだけ)
+- 既存のサイトは、`templates/config.php` の `SITE_IMAGE_WIDTHS` と `SITE_CONTENT_IMAGE_SIZES` を自分で決める。既定に合わせるなら `[768, 1200]` と `[]` にする
+
+[1.4.2]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.4.2
