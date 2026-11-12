@@ -11,6 +11,9 @@
   }
 
   // CSS では使わない (メディアクエリに CSS 変数は使えない). PHP が画像の sizes を決めるために読む (inc/ImageVariants.php)
+  // ルートの文字サイズの上限は, rem で書いたコンテナ幅を px にするために使う
+  --root-font-size: #{$font-size-base};
+
   @each $key, $width in $breakpoints {
     --breakpoint--#{$key}: #{$width};
   }

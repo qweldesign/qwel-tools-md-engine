@@ -79,13 +79,15 @@ class ImageVariants {
     if ($inner === null || $inner <= 0) return '100vw';
 
     // ブレイクポイント (px) => 割合. コンテナが内寸で止まる幅も区切りにする
+    // 区切りは整数の px に切り上げる (コンテナ幅が 710.4px のような端数でも, 区切りの幅で比べられるように)
+    $outerMin = (int)ceil($outer);
     $steps = [0 => 1.0];
     foreach ($ratios as $key => $ratio) {
       $min = $key === 'xs' ? 0 : ($layout['breakpoint'][$key] ?? null);
-      if ($min !== null) $steps[(int)$min] = (float)$ratio;
+      if ($min !== null) $steps[(int)ceil($min)] = (float)$ratio;
     }
     ksort($steps);
-    $thresholds = array_unique([...array_keys($steps), (int)$outer]);
+    $thresholds = array_unique([...array_keys($steps), $outerMin]);
     rsort($thresholds);
 
     $items = [];
@@ -94,7 +96,7 @@ class ImageVariants {
       foreach ($steps as $stepMin => $stepRatio) {
         if ($stepMin <= $min) $ratio = $stepRatio;
       }
-      $items[$min] = $min >= $outer ? round($inner * $ratio) . 'px' : self::number(100 * $ratio) . 'vw';
+      $items[$min] = $min >= $outerMin ? round($inner * $ratio) . 'px' : self::number(100 * $ratio) . 'vw';
     }
     // 次に狭い区切りと同じ値なら, まとめる
     $result = [];
@@ -114,9 +116,11 @@ class ImageVariants {
 
     $layout = ['breakpoint' => [], 'container-width' => [], 'container-pad' => []];
     $css = siteFileExists('style.css') ? (string)file_get_contents(siteFile('style.css')) : '';
+    // ルートの文字サイズの上限 ($font-size-base. ない古い style.css では既定の 16px)
+    $rem = preg_match('/--root-font-size\s*:\s*([\d.]+)px/', $css, $root) ? (float)$root[1] : 16.0;
     preg_match_all('/--(breakpoint|container-width|container-pad)--([\w-]+)\s*:\s*([^;}]+)/', $css, $matches, PREG_SET_ORDER);
     foreach ($matches as [, $name, $key, $value]) {
-      $px = self::px($value);
+      $px = self::px($value, $rem);
       if ($px !== null) $layout[$name][$key] = $px;
     }
     return $layout;
@@ -124,17 +128,17 @@ class ImageVariants {
 
   /**
    * CSS の長さを px にする (読めなければ null)
-   * rem は 16px とみなす (sizes の幅が効くのは, ルートの文字サイズが既定の 16px になる幅だけのため)
+   * rem は $rem (ルートの文字サイズの上限) で換算する. sizes の px の値が効くのは, コンテナが内寸で止まる広い画面で, そこではルートの文字サイズが上限になるため
    * clamp() は最大値 (コンテナが内寸で止まる幅では, 余白は最大値になる)
    */
-  private static function px(string $value): ?float {
+  private static function px(string $value, float $rem): ?float {
     $value = trim($value);
     if (preg_match('/^clamp\((.+)\)$/', $value, $clamp)) {
       $parts = explode(',', $clamp[1]);
       $value = trim((string)end($parts));
     }
     if (!preg_match('/^(-?[\d.]+)(px|rem)$/', $value, $length)) return null;
-    return (float)$length[1] * ($length[2] === 'rem' ? 16 : 1);
+    return (float)$length[1] * ($length[2] === 'rem' ? $rem : 1);
   }
 
   // 小数 2 桁まで, 末尾の 0 を省いた数
