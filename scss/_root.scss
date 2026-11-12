@@ -10,6 +10,11 @@
     --color--#{$key}--active: #{color-activate($key)};
   }
 
+  // CSS では使わない (メディアクエリに CSS 変数は使えない). PHP が画像の sizes を決めるために読む (inc/ImageVariants.php)
+  @each $key, $width in $breakpoints {
+    --breakpoint--#{$key}: #{$width};
+  }
+
   @each $key, $width in $container-widths {
     --container-width--#{$key}: #{$width};
   }

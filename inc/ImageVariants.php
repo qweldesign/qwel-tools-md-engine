@@ -5,10 +5,11 @@
  * Released under the MIT License.
  * See LICENSE file for details.
  *
- * 画像の幅ごとの WebP (srcset 用)
+ * 画像の幅ごとの WebP (srcset と sizes)
  * 元の画像 (JPEG, PNG) から, SITE_IMAGE_WIDTHS の幅の WebP を cache/images/ に作る
  * FTP で画像を上げるだけで使えるように, ページを表示するときに, まだない幅をその場で作る
  * cache/images/ はいつ丸ごと消してもよい (次の表示で作り直す)
+ * sizes は style.css の :root のブレイクポイントとコンテナ幅から作る (scss/settings/_gridSystem.scss の値を二重に持たないため)
  */
 
 class ImageVariants {
@@ -58,6 +59,87 @@ class ImageVariants {
     if (!$items) return '';
     if ($needsOriginal) $items[] = self::url($path) . ' ' . $width . 'w';
     return implode(', ', $items);
+  }
+
+  /**
+   * sizes の値 (例: (min-width: 1200px) 384px, (min-width: 900px) 33.33vw, 100vw)
+   * $container: コンテナのキー (sm, md, lg) または内寸の px. キーなら, style.css のコンテナ幅から余白の最大値を引いた値を内寸にする
+   * $ratios: ブレイクポイントのキー => コンテナの何割に表示するか (そのブレイクポイント以上で効く. xs はすべての幅)
+   * 列の間のガターは引かない (少し大きめになるが, 候補の幅は表示する幅より少し上にそろえているので困らない)
+   * style.css から読めないときは 100vw
+   */
+  public static function sizes(string|int $container = 'lg', array $ratios = []): string {
+    $layout = self::layout();
+    if (is_int($container)) {
+      $inner = $outer = $container;
+    } else {
+      $outer = $layout['container-width'][$container] ?? null;
+      $inner = $outer === null ? null : $outer - 2 * ($layout['container-pad'][$container] ?? 0);
+    }
+    if ($inner === null || $inner <= 0) return '100vw';
+
+    // ブレイクポイント (px) => 割合. コンテナが内寸で止まる幅も区切りにする
+    $steps = [0 => 1.0];
+    foreach ($ratios as $key => $ratio) {
+      $min = $key === 'xs' ? 0 : ($layout['breakpoint'][$key] ?? null);
+      if ($min !== null) $steps[(int)$min] = (float)$ratio;
+    }
+    ksort($steps);
+    $thresholds = array_unique([...array_keys($steps), (int)$outer]);
+    rsort($thresholds);
+
+    $items = [];
+    foreach ($thresholds as $min) {
+      $ratio = 1.0;
+      foreach ($steps as $stepMin => $stepRatio) {
+        if ($stepMin <= $min) $ratio = $stepRatio;
+      }
+      $items[$min] = $min >= $outer ? round($inner * $ratio) . 'px' : self::number(100 * $ratio) . 'vw';
+    }
+    // 次に狭い区切りと同じ値なら, まとめる
+    $result = [];
+    $values = array_values($items);
+    foreach (array_keys($items) as $index => $min) {
+      $isSame = isset($values[$index + 1]) && $values[$index + 1] === $values[$index];
+      if ($isSame) continue;
+      $result[] = $min > 0 ? "(min-width: {$min}px) {$values[$index]}" : $values[$index];
+    }
+    return implode(', ', $result);
+  }
+
+  // style.css の :root のブレイクポイント, コンテナ幅, コンテナの余白 (px). 1 回のリクエストで 1 度だけ読む
+  private static function layout(): array {
+    static $layout = null;
+    if ($layout !== null) return $layout;
+
+    $layout = ['breakpoint' => [], 'container-width' => [], 'container-pad' => []];
+    $css = siteFileExists('style.css') ? (string)file_get_contents(siteFile('style.css')) : '';
+    preg_match_all('/--(breakpoint|container-width|container-pad)--([\w-]+)\s*:\s*([^;}]+)/', $css, $matches, PREG_SET_ORDER);
+    foreach ($matches as [, $name, $key, $value]) {
+      $px = self::px($value);
+      if ($px !== null) $layout[$name][$key] = $px;
+    }
+    return $layout;
+  }
+
+  /**
+   * CSS の長さを px にする (読めなければ null)
+   * rem は 16px とみなす (sizes の幅が効くのは, ルートの文字サイズが既定の 16px になる幅だけのため)
+   * clamp() は最大値 (コンテナが内寸で止まる幅では, 余白は最大値になる)
+   */
+  private static function px(string $value): ?float {
+    $value = trim($value);
+    if (preg_match('/^clamp\((.+)\)$/', $value, $clamp)) {
+      $parts = explode(',', $clamp[1]);
+      $value = trim((string)end($parts));
+    }
+    if (!preg_match('/^(-?[\d.]+)(px|rem)$/', $value, $length)) return null;
+    return (float)$length[1] * ($length[2] === 'rem' ? 16 : 1);
+  }
+
+  // 小数 2 桁まで, 末尾の 0 を省いた数
+  private static function number(float $value): string {
+    return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
   }
 
   // WebP を作れるか (SITE_IMAGE_WIDTHS がない古い config.php と, GD がないサーバーでは作らない)

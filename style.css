@@ -27,6 +27,9 @@
   --color--secondary--active: rgb(255, 141.4015748031, 26);
   --color--tertiary: #99cc33;
   --color--tertiary--active: rgb(91.8, 122.4, 30.6);
+  --breakpoint--sm: 600px;
+  --breakpoint--md: 900px;
+  --breakpoint--lg: 1200px;
   --container-width--sm: 37.5rem;
   --container-width--md: 56.25rem;
   --container-width--lg: 75rem;

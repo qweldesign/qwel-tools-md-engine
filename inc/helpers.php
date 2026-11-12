@@ -43,8 +43,9 @@ function assetUrl(string $path): string {
  * 大きさを伝えると, 画像を読み込む前に場所を取れるので, レイアウトがずれない. http から始まる URL と読めない画像には付けない
  * JPEG と PNG には, SITE_IMAGE_WIDTHS の幅の WebP を srcset で付ける (inc/ImageVariants.php)
  * $loading: lazy 遅延 (既定), eager すぐ読む, high すぐ読み, 優先度も上げる (ファーストビューの大きな画像に使う)
- * $sizes: 表示する幅 (sizes 属性の値. 既定で 100vw)
+ * $sizes: 表示する幅 (sizes 属性の値. imageSizes() で作る. 既定の 100vw は, 画面の端まで広がる画像でも粗くならない)
  * 例: <img src="<?= e(path('assets/hero.jpg')) ?>" alt=""<?= imageAttrs('assets/hero.jpg', 'high') ?>>
+ * 例: 3 列のカード <?= imageAttrs($image, 'lazy', imageSizes('lg', ['md' => 1 / 3])) ?>
  */
 function imageAttrs(string $path, string $loading = 'lazy', string $sizes = '100vw'): string {
   $size = !isExternal($path) && siteFileExists($path) ? ImageVariants::size(siteFile($path)) : null;
@@ -56,6 +57,25 @@ function imageAttrs(string $path, string $loading = 'lazy', string $sizes = '100
     'eager' => ' loading="eager" decoding="async"',
     default => ' loading="lazy" decoding="async"',
   };
+}
+
+/**
+ * 画像の sizes 属性の値 (style.css のブレイクポイントとコンテナ幅から作る. inc/ImageVariants.php)
+ * $container: コンテナのキー (sm, md, lg) または内寸の px
+ * $ratios: ブレイクポイントのキー => コンテナの何割に表示するか (そのブレイクポイント以上で効く)
+ * 例: imageSizes() → (min-width: 1200px) 1152px, 100vw
+ * 例: imageSizes('lg', ['md' => 1 / 3]) → (min-width: 1200px) 384px, (min-width: 900px) 33.33vw, 100vw
+ */
+function imageSizes(string|int $container = 'lg', array $ratios = []): string {
+  return ImageVariants::sizes($container, $ratios);
+}
+
+// 原稿の本文の画像の sizes 属性の値 (templates/config.php の SITE_CONTENT_IMAGE_SIZES. 古い config.php では 100vw)
+function contentImageSizes(): string {
+  static $sizes = null;
+  if ($sizes !== null) return $sizes;
+  $config = defined('SITE_CONTENT_IMAGE_SIZES') ? SITE_CONTENT_IMAGE_SIZES : [];
+  return $sizes = isset($config['container']) ? imageSizes($config['container'], $config['ratios'] ?? []) : '100vw';
 }
 
 /**

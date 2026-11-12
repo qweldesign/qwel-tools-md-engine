@@ -111,7 +111,7 @@ class ContentLoader {
     return preg_replace_callback('#<img\b((?:[^>"\']|"[^"]*"|\'[^\']*\')*?)(\s*/?)>#i', function (array $match) use (&$index): string {
       $loading = $index++ === 0 ? 'eager' : 'lazy';
       if (preg_match('/\s(?:width|loading)=/i', $match[1]) || !preg_match('/\ssrc="([^"?#]+)/i', $match[1], $src)) return $match[0];
-      return '<img' . $match[1] . imageAttrs(rawurldecode($src[1]), $loading) . $match[2] . '>';
+      return '<img' . $match[1] . imageAttrs(rawurldecode($src[1]), $loading, contentImageSizes()) . $match[2] . '>';
     }, $html) ?? $html;
   }
 

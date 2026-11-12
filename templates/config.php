@@ -38,6 +38,9 @@ const SITE_THUMBNAIL_IMAGE = '';
 // これより大きい幅が要る端末 (デスクトップの高解像度の画面) には元の画像を使うので, 元の画像は表示する幅の 2 倍程度に縮めて上げる
 // ページを表示するときに, まだない幅を作る. 元の画像より大きい幅は作らない. cache/images/ はいつ消してもよい
 const SITE_IMAGE_WIDTHS = [384, 768, 1152];
+// 原稿の本文の画像の表示幅 (imageSizes() の引数. container はコンテナのキー sm, md, lg または内寸の px, ratios はブレイクポイントごとの割合)
+// 既定は .main の内寸 (768px から左右の余白を引いた 720px). 例: ['container' => 'md', 'ratios' => ['md' => 2 / 3]]
+const SITE_CONTENT_IMAGE_SIZES = ['container' => 720];
 // URL の形式 (true: /blog/xxx/, false: /blog/?slug=xxx). .htaccess が効かない php -S では false になる
 const SITE_PRETTY_URLS = PHP_SAPI !== 'cli-server';
 
