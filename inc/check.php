@@ -288,8 +288,31 @@ if (array_key_exists('http', $args)) {
   if ($sampleImage !== '') $expectCache($sampleImage, 604800, '原稿の画像');
 
   // HTML に長いキャッシュが付くと, 原稿を置き換えてもすぐ反映されない
-  $topCache = $request('')['cache'];
+  $top = $request('');
+  $topCache = $top['cache'];
   check(!preg_match('/max-age=[1-9]/', $topCache), 'トップに長いキャッシュがない → ' . ($topCache ?: 'なし'));
+
+  // 画像の WebP (inc/ImageVariants.php). サーバーの GD と cache/ への書き込みは, 手元の PHP では確かめられないので, 公開中のページで見る
+  // srcset がないのは, 作れなくても元の画像で表示できるので [WARN]. srcset の WebP を開けないのは, その画像が表示されないので [NG]
+  if (defined('SITE_IMAGE_WIDTHS') && SITE_IMAGE_WIDTHS) {
+    preg_match_all('/<img\b[^>]*>/i', $top['body'], $tags);
+    $images = array_values(array_filter($tags[0], fn(string $tag): bool => (bool)preg_match('/\ssrc="(?!https?:)[^"]+\.(?:jpe?g|png)"/i', $tag)));
+    $variant = '';
+    foreach ($images as $tag) {
+      if (preg_match('/\ssrcset="([^"]*cache\/images\/[^"]*)"/i', $tag, $srcset)) {
+        $variant = strtok(html_entity_decode($srcset[1]), ' ');
+        break;
+      }
+    }
+    if ($images && $variant === '') {
+      report('WARN', 'トップの画像に WebP の srcset がない (サーバーの GD が WebP に対応しているか, サイトのルートに cache/ を作れるかを確かめる)');
+    } elseif ($variant !== '') {
+      $path = str_starts_with($variant, SITE_ROOT) ? substr($variant, strlen(SITE_ROOT)) : ltrim($variant, '/');
+      $webp = $request($path);
+      check($webp['status'] === 200 && str_contains($webp['type'], 'image/webp'), "トップの画像の WebP を開ける → " . ($webp['status'] ?: '応答なし') . ($webp['type'] ? " {$webp['type']}" : ''));
+      report(str_contains($webp['cache'], 'max-age=31536000') ? 'OK' : 'WARN', '画像の WebP のキャッシュが 31536000 秒 (?v= のある URL) → ' . ($webp['cache'] ?: 'なし'));
+    }
+  }
 }
 
 $summary = $failures ? "問題が {$failures} 件あります" : '問題はありません';
