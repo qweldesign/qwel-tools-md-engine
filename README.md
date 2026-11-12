@@ -18,7 +18,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 - 個別のページを持たない投稿タイプ (リンク集、作品集など)
 - 公開前の下書きを確認用サーバーで表示
 - 料金などの値を JSON で管理するデータファイル
-- ブラウザのキャッシュ、画像の属性、Web フォントの読み方で表示を速く
+- ブラウザのキャッシュ、画像の属性と幅ごとの WebP、Web フォントの読み方で表示を速く
 - ページ送り、パンくず、前後の記事、最新記事
 - `/blog/xxx/` 形式のURL
 - タイトル、説明文、ナビ、フッターを `templates/config.php` から出力
@@ -60,7 +60,7 @@ Markdown の原稿から、データベースなしでサイトを作るPHPの�
 
 ### 動作環境
 
-- PHP 8.0 以上
+- PHP 8.0 以上 (画像の WebP に GD。なくても表示はできる)
 - Apache 2.4.10 以上 (mod_rewrite、`.htaccess` を有効にする `AllowOverride`。ブラウザのキャッシュに mod_headers)
 - Composer
 - Sass (`scss/` を書き換えるとき)
@@ -104,7 +104,28 @@ php -S 127.0.0.1:8000
 
 第 2 引数は `lazy` (既定), `eager`, `high` (すぐ読み、優先度も上げる。ファーストビューの大きな画像に使う)。
 
-画像そのものの大きさは縮小しない。大きな画像は、サイトごとに作り直す。
+### 画像の WebP
+
+JPEG と PNG の画像には、幅ごとの WebP を自動で作り、`srcset` で配る。FTP で画像を上げるだけでよい。モバイルは小さな WebP を読むので、転送量が大きく減る。
+
+- 作る幅は `templates/config.php` の `SITE_IMAGE_WIDTHS`。既定は `[384, 768, 1152]` (コンテナの内寸の 1/3, 2/3, 1。768 はモバイルの全幅を受け持つ)。元の画像より大きい幅は作らない
+- ページを表示するときに、まだない幅を作り、`cache/images/` に元のパスを写して置く。1 回の表示で作るのは約 2 秒分までで、残りは次の表示で作る。画像を上げた直後の数回は、表示が少し遅くなる
+- `cache/` はいつ丸ごと消してもよい。次の表示で作り直す。元の画像を同じ名前で差し替えたときも作り直す
+- 元の画像が `SITE_IMAGE_WIDTHS` の最大より大きいときは、元の画像も候補に入れる。デスクトップの高解像度の画面は元の画像を読むので、**元の画像は表示する幅の 2 倍程度に縮めて上げる** (カメラの写真をそのまま上げない)
+- サーバーの PHP に GD (WebP 対応) が要る。PHP がサイトのルートに `cache/` を作れること。どちらかがなければ WebP は付かず、元の画像だけで表示する (公開したあと `php inc/check.php --http` で確かめる)
+
+`sizes` (表示する幅) は `imageAttrs()` の第 3 引数で渡す。既定は `100vw` (画面の端まで広がる画像でも粗くならない)。`imageSizes()` は、`style.css` のブレイクポイントとコンテナ幅 (`scss/settings/_gridSystem.scss`) から `sizes` を作る。
+
+```php
+// md 以上で 3 列に並ぶカード → (min-width: 1200px) 384px, (min-width: 900px) 33.33vw, 100vw
+<img src="<?= e(path($image)) ?>" alt=""<?= imageAttrs($image, 'lazy', imageSizes('lg', ['md' => 1 / 3])) ?>>
+```
+
+- 第 1 引数はコンテナのキー (`sm`, `md`, `lg`) か、内寸の px。コンテナを使わず幅を直接書いた部品 (例: `max-width: 30rem`) は px で渡す
+- 第 2 引数は、ブレイクポイントごとに、コンテナの何割に表示するか。そのブレイクポイント以上で効く (`xs` はすべての幅)
+- 実際の表示幅より小さく見積もると、画像が粗くなる。迷ったら大きめにする
+
+原稿の本文の画像の `sizes` は、`SITE_CONTENT_IMAGE_SIZES` で決める (既定は `.main` の内寸の 720px)。本文の幅を変えたサイトは、ここも直す。
 
 ### Web フォント
 
@@ -147,7 +168,7 @@ php inc/check.php --http       あわせて公開中のサイトに問い合わ�
 php inc/check.php --http=URL   問い合わせ先のサイトのルートの URL を指定する
 ```
 
-`--http` では、`.htaccess` が効いているか (`inc/`, `templates/`, 原稿、データファイルの拒否、きれいな URL、転送、404、`/sitemap.xml`, `/robots.txt`、キャッシュ) を確かめる。`.htaccess` はアップロードし忘れても表示が崩れないので、アップロードのあとに実行する。
+`--http` では、`.htaccess` が効いているか (`inc/`, `templates/`, 原稿、データファイルの拒否、きれいな URL、転送、404、`/sitemap.xml`, `/robots.txt`、キャッシュ) と、トップの画像に WebP が付いて開けるか (サーバーの GD と `cache/` の作成) を確かめる。`.htaccess` はアップロードし忘れても表示が崩れないので、アップロードのあとに実行する。
 
 ### 構成
 
@@ -162,6 +183,7 @@ inc/              エンジン (404.php, sitemap.php, robots.php を含む)
 templates/        サイトが持つテンプレートと設定 (config.php)
 scss/, style.css  スタイル
 js/, init.js      JavaScript
+cache/            自動で作る画像 (Git に入れない。いつ消してもよい)
 ```
 
 `content/` (`content/images/` の画像を除く), `inc/` (`404.php`, `sitemap.php`, `robots.php` を除く), `templates/` はWebから読めない。

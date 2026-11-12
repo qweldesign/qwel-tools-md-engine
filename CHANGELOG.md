@@ -241,3 +241,28 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 `v1.0.0` から切ったブランチに積んだコミットなので、古い版のサイトにも当てられる (`d3c6702`)。
 
 [1.3.1]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.3.1
+
+## [1.4.0] 画像の WebP
+
+### 画像
+
+- JPEG と PNG の画像から、幅ごとの WebP を自動で作り、`imageAttrs()` が `srcset` で配る (`inc/ImageVariants.php`)。FTP で画像を上げるだけでよい (#11)
+- 作るのはページを表示したとき。1 回の表示で約 2 秒分まで作り、残りは次の表示で作る。`.htaccess` の書き換えも、外から呼べる生成用の入口も要らない
+- 幅は `SITE_IMAGE_WIDTHS` (既定は `[384, 768, 1152]`)。元の画像より大きい幅は作らない。元の画像が最大の幅より大きいときは、元の画像も候補に入れる
+- 作った画像は `cache/images/` に置く。いつ消してもよい。元の画像と更新時刻が違えば作り直す
+- EXIF の向きを直し、PNG の透明を残す。`width` と `height` も、向きを直したあとの値にする (縦の写真で縦横が逆になっていた)
+- `imageSizes()` は、`style.css` のブレイクポイントとコンテナ幅から `sizes` を作る。`scss/_root.scss` でブレイクポイントを CSS 変数として出力する
+- 原稿の本文の画像と一覧のサムネイルの `sizes` は `SITE_CONTENT_IMAGE_SIZES`
+- `check.php --http` で、トップの画像に WebP が付いて開けるかを確かめる
+
+### 1.3.1 からの更新
+
+- `inc/ImageVariants.php` を足し、`inc/helpers.php`, `inc/ContentLoader.php`, `inc/check.php` を置き換える
+- `scss/_root.scss` を当て、`style.css` をビルドし直す
+- `templates/config.php` に `SITE_IMAGE_WIDTHS` と `SITE_CONTENT_IMAGE_SIZES` を書く。本文の幅を変えたサイトは、`SITE_CONTENT_IMAGE_SIZES` を自分の本文の幅にする
+- `.gitignore` に `/cache/` を足す
+- テンプレートの画像には、`imageAttrs()` の第 3 引数で `imageSizes()` を渡す。渡さないと `100vw` になる (粗くはならないが、デスクトップで大きな画像を読む)。表示幅を測ってから決め、実際より小さく見積もらない
+- 使わないサイトは `SITE_IMAGE_WIDTHS` を空の配列にする。書かない古い `config.php` でも今までどおり動く
+- マージでは `templates/config.php`, `templates/postList.php`, `style.css` が競合しやすい。前の 2 つは自分の版に足し、`style.css` はビルドし直す
+
+[1.4.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.4.0

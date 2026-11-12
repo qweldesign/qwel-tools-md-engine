@@ -10,7 +10,7 @@
  */
 
 // エンジンの版 (リリースのときに更新する. サイトがどの版から作られたかを, 公開中のページのソースで確かめられるように出力する)
-const SITE_ENGINE_VERSION = '1.3.1';
+const SITE_ENGINE_VERSION = '1.4.0';
 
 require_once __DIR__ . '/ImageVariants.php';
 
