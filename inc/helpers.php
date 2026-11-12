@@ -44,13 +44,15 @@ function assetUrl(string $path): string {
  * JPEG と PNG には, SITE_IMAGE_WIDTHS の幅の WebP を srcset で付ける (inc/ImageVariants.php)
  * $loading: lazy 遅延 (既定), eager すぐ読む, high すぐ読み, 優先度も上げる (ファーストビューの大きな画像に使う)
  * $sizes: 表示する幅 (sizes 属性の値. imageSizes() で作る. 既定の 100vw は, 画面の端まで広がる画像でも粗くならない)
+ * $webp: false で WebP を付けない (色数を絞って軽く作った PNG など, WebP にしても軽くならない画像や, 画質を落としたくない画像)
  * 例: <img src="<?= e(path('assets/hero.jpg')) ?>" alt=""<?= imageAttrs('assets/hero.jpg', 'high') ?>>
  * 例: 3 列のカード <?= imageAttrs($image, 'lazy', imageSizes('lg', ['md' => 1 / 3])) ?>
+ * 例: 元の画像のまま <?= imageAttrs('assets/artwork.png', 'high', webp: false) ?>
  */
-function imageAttrs(string $path, string $loading = 'lazy', string $sizes = '100vw'): string {
+function imageAttrs(string $path, string $loading = 'lazy', string $sizes = '100vw', bool $webp = true): string {
   $size = !isExternal($path) && siteFileExists($path) ? ImageVariants::size(siteFile($path)) : null;
   $attrs = $size ? " width=\"{$size[0]}\" height=\"{$size[1]}\"" : '';
-  $srcset = $size ? ImageVariants::srcset($path, $size[0]) : '';
+  $srcset = $size && $webp ? ImageVariants::srcset($path, $size[0]) : '';
   if ($srcset !== '') $attrs .= ' srcset="' . e($srcset) . '" sizes="' . e($sizes) . '"';
   return $attrs . match ($loading) {
     'high'  => ' loading="eager" fetchpriority="high"',
