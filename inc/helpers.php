@@ -12,6 +12,8 @@
 // エンジンの版 (リリースのときに更新する. サイトがどの版から作られたかを, 公開中のページのソースで確かめられるように出力する)
 const SITE_ENGINE_VERSION = '1.3.1';
 
+require_once __DIR__ . '/ImageVariants.php';
+
 // HTMLに出す値のエスケープ
 function e(?string $value): string {
   return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
@@ -37,14 +39,18 @@ function assetUrl(string $path): string {
 }
 
 /**
- * img 要素に足す属性 (大きさと読み込み方. 先頭に空白が付く)
+ * img 要素に足す属性 (大きさ, 幅ごとの WebP, 読み込み方. 先頭に空白が付く)
  * 大きさを伝えると, 画像を読み込む前に場所を取れるので, レイアウトがずれない. http から始まる URL と読めない画像には付けない
+ * JPEG と PNG には, SITE_IMAGE_WIDTHS の幅の WebP を srcset で付ける (inc/ImageVariants.php)
  * $loading: lazy 遅延 (既定), eager すぐ読む, high すぐ読み, 優先度も上げる (ファーストビューの大きな画像に使う)
+ * $sizes: 表示する幅 (sizes 属性の値. 既定で 100vw)
  * 例: <img src="<?= e(path('assets/hero.jpg')) ?>" alt=""<?= imageAttrs('assets/hero.jpg', 'high') ?>>
  */
-function imageAttrs(string $path, string $loading = 'lazy'): string {
-  $size = !isExternal($path) && siteFileExists($path) ? @getimagesize(siteFile($path)) : false;
-  $attrs = $size && $size[0] > 0 && $size[1] > 0 ? " width=\"{$size[0]}\" height=\"{$size[1]}\"" : '';
+function imageAttrs(string $path, string $loading = 'lazy', string $sizes = '100vw'): string {
+  $size = !isExternal($path) && siteFileExists($path) ? ImageVariants::size(siteFile($path)) : null;
+  $attrs = $size ? " width=\"{$size[0]}\" height=\"{$size[1]}\"" : '';
+  $srcset = $size ? ImageVariants::srcset($path, $size[0]) : '';
+  if ($srcset !== '') $attrs .= ' srcset="' . e($srcset) . '" sizes="' . e($sizes) . '"';
   return $attrs . match ($loading) {
     'high'  => ' loading="eager" fetchpriority="high"',
     'eager' => ' loading="eager" decoding="async"',

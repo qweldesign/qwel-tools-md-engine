@@ -13,3 +13,6 @@ inc/.env
 !/content/images/
 /content/images/*
 !/content/images/.htaccess
+
+# 自動で作る画像 (inc/ImageVariants.php)
+/cache/
