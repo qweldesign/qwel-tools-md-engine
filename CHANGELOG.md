@@ -266,3 +266,19 @@ Markdown の原稿の表示からお問い合わせフォームまで、サイ�
 - マージでは `templates/config.php`, `templates/postList.php`, `style.css` が競合しやすい。前の 2 つは自分の版に足し、`style.css` はビルドし直す
 
 [1.4.0]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.4.0
+
+## [1.4.1] 画像の sizes の修正と, 画像ごとの WebP の指定
+
+### 画像
+
+- `imageSizes()` が、rem で書いたコンテナ幅を 16px で換算していた。`$font-size-base` を変えたサイト (例: 18px) では、表示する幅を小さく見積もり、画像が粗くなることがあった。`scss/_root.scss` で `--root-font-size` を出力し、その値で換算する
+- コンテナ幅が端数の px (例: 710.4px) になると、コンテナが内寸で止まる区切りが消え、`100vw` になっていた。区切りの幅を切り上げてから比べる
+- `imageAttrs()` に `webp: false` を渡すと、その画像には WebP を付けない。色数を絞って軽く作った PNG は、WebP にしても軽くならず、質感が柔らかくなることがある。`v1.4.0` では画像ごとに外せなかった
+
+### 1.4.0 からの更新
+
+- `inc/ImageVariants.php` と `inc/helpers.php` を置き換え、`scss/_root.scss` を当てて `style.css` をビルドし直す
+- `$font-size-base` とコンテナ幅を既定のまま使っているサイトは、`sizes` の出力が変わらない
+- `--root-font-size` がない古い `style.css` では、今までどおり 16px で換算する
+
+[1.4.1]: https://github.com/qweldesign/qwel-tools-md-engine/releases/tag/v1.4.1

@@ -114,7 +114,7 @@ JPEG と PNG の画像には、幅ごとの WebP を自動で作り、`srcset` �
 - 元の画像が `SITE_IMAGE_WIDTHS` の最大より大きいときは、元の画像も候補に入れる。デスクトップの高解像度の画面は元の画像を読むので、**元の画像は表示する幅の 2 倍程度に縮めて上げる** (カメラの写真をそのまま上げない)
 - サーバーの PHP に GD (WebP 対応) が要る。PHP がサイトのルートに `cache/` を作れること。どちらかがなければ WebP は付かず、元の画像だけで表示する (公開したあと `php inc/check.php --http` で確かめる)
 
-`sizes` (表示する幅) は `imageAttrs()` の第 3 引数で渡す。既定は `100vw` (画面の端まで広がる画像でも粗くならない)。`imageSizes()` は、`style.css` のブレイクポイントとコンテナ幅 (`scss/settings/_gridSystem.scss`) から `sizes` を作る。
+`sizes` (表示する幅) は `imageAttrs()` の第 3 引数で渡す。既定は `100vw` (画面の端まで広がる画像でも粗くならない)。`imageSizes()` は、`style.css` のブレイクポイントとコンテナ幅 (`scss/settings/_gridSystem.scss`) から `sizes` を作る。rem で書いたコンテナ幅は、ルートの文字サイズ (`$font-size-base`) で px に換算する。`scss/` の値を変えたら、`style.css` をビルドし直す。
 
 ```php
 // md 以上で 3 列に並ぶカード → (min-width: 1200px) 384px, (min-width: 900px) 33.33vw, 100vw
@@ -126,6 +126,12 @@ JPEG と PNG の画像には、幅ごとの WebP を自動で作り、`srcset` �
 - 実際の表示幅より小さく見積もると、画像が粗くなる。迷ったら大きめにする
 
 原稿の本文の画像の `sizes` は、`SITE_CONTENT_IMAGE_SIZES` で決める (既定は `.main` の内寸の 720px)。本文の幅を変えたサイトは、ここも直す。
+
+WebP にしない画像は、`imageAttrs()` に `webp: false` を渡す。色数を絞って軽く作った PNG (イラストや版画など) は、WebP にしても軽くならず、質感が柔らかくなることがある。原稿の画像を外すときは、HTML で `width` を書く (エンジンが属性を足さない)。サイト全体で使わないときは、`SITE_IMAGE_WIDTHS` を空の配列にする。
+
+```php
+<img src="<?= e(path('assets/artwork.png')) ?>" alt=""<?= imageAttrs('assets/artwork.png', 'high', webp: false) ?>>
+```
 
 ### Web フォント
 
